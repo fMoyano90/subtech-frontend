@@ -1,7 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { fetchWithAuth } from "@/lib/api";
 import { getToken } from "@/lib/auth";
@@ -36,6 +43,8 @@ const CATEGORIES = [
   { key: "Flota vehicular", label: "Vehículos", accent: "#D4A700" },
 ] as const;
 
+const POLLING_INTERVAL_MS = 30_000;
+
 /* ═══════════════════════════════════════════
    Helpers
    ═══════════════════════════════════════════ */
@@ -69,6 +78,26 @@ function getLatestPerEtiqueta(tags: MinaTag[]): MinaTag[] {
     }
   }
   return Array.from(map.values()).sort((a, b) => b.timestap - a.timestap);
+}
+
+function hasMeaningfulTagChanges(prev: MinaTag[], next: MinaTag[]): boolean {
+  if (prev.length !== next.length) return true;
+
+  const prevById = new Map(
+    prev.map((tag) => [
+      tag.id,
+      `${tag.timestap}|${tag.categoria}|${tag.etiqueta}|${tag.ubicacion}`,
+    ]),
+  );
+
+  for (const tag of next) {
+    const current = `${tag.timestap}|${tag.categoria}|${tag.etiqueta}|${tag.ubicacion}`;
+    if (prevById.get(tag.id) !== current) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 async function fetchAllMinaTags(): Promise<MinaTag[]> {
@@ -297,6 +326,32 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [filter, setFilter] = useState("");
+  const isRefreshingRef = useRef(false);
+
+  const refreshTags = useCallback(
+    async ({ silent }: { silent: boolean }) => {
+      if (isRefreshingRef.current) return;
+      isRefreshingRef.current = true;
+
+      try {
+        const nextTags = await fetchAllMinaTags();
+        startTransition(() => {
+          setTags((prev) =>
+            hasMeaningfulTagChanges(prev, nextTags) ? nextTags : prev,
+          );
+        });
+        if (!silent) setError("");
+      } catch (e) {
+        if (!silent) {
+          setError(e instanceof Error ? e.message : "Error desconocido");
+        }
+      } finally {
+        if (!silent) setLoading(false);
+        isRefreshingRef.current = false;
+      }
+    },
+    [],
+  );
 
   /* Auth check + data fetch */
   useEffect(() => {
@@ -304,11 +359,20 @@ export default function DashboardPage() {
       router.replace("/");
       return;
     }
-    fetchAllMinaTags()
-      .then(setTags)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [router]);
+
+    void refreshTags({ silent: false });
+  }, [refreshTags, router]);
+
+  /* Silent polling every 30s */
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      if (!getToken()) return;
+      void refreshTags({ silent: true });
+    }, POLLING_INTERVAL_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [refreshTags]);
 
   /* Group by category */
   const grouped = useMemo(() => {
