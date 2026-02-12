@@ -154,7 +154,7 @@ export default function LoginPage() {
               className="text-center text-base tracking-[0.25em] font-medium uppercase"
               style={{ color: "rgba(182, 226, 255, 0.6)", fontFamily: "var(--font-dm-sans)" }}
             >
-              Plataforma de gestión
+              Plataforma de monitoreo
             </p>
           </div>
         </div>

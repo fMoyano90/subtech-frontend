@@ -1,17 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { removeToken } from "@/lib/auth";
 
+interface NavLink {
+  href: string;
+  label: string;
+}
+
 interface DashboardNavbarProps {
   title: string;
+  links?: NavLink[];
   onLogout?: () => void;
 }
 
-export function DashboardNavbar({ title, onLogout }: DashboardNavbarProps) {
+export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = useCallback(() => {
     if (onLogout) {
@@ -34,9 +42,31 @@ export function DashboardNavbar({ title, onLogout }: DashboardNavbarProps) {
           className="shrink-0"
         />
         <div className="h-5 w-px bg-subtech-light-blue/50" />
-        <span className="text-[0.85rem] font-semibold text-subtech-dark-blue">
-          {title}
-        </span>
+
+        {links ? (
+          <div className="flex items-center gap-1">
+            {links.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`rounded-lg px-3 py-1.5 text-[0.85rem] font-semibold transition-colors ${
+                    isActive
+                      ? "bg-subtech-dark-blue text-white"
+                      : "text-subtech-dark-blue/60 hover:bg-subtech-ice hover:text-subtech-dark-blue"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <span className="text-[0.85rem] font-semibold text-subtech-dark-blue">
+            {title}
+          </span>
+        )}
       </div>
       <button
         type="button"

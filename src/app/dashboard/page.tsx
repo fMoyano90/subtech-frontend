@@ -10,109 +10,33 @@ import {
   useState,
 } from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
-import { fetchWithAuth } from "@/lib/api";
 import { getToken } from "@/lib/auth";
+import {
+  type MinaTag,
+  CATEGORIES,
+  POLLING_INTERVAL_MS,
+  formatDate,
+  formatTime,
+  getLatestPerEtiqueta,
+  hasMeaningfulTagChanges,
+  fetchAllMinaTags,
+} from "@/lib/mina-tags";
 
 /* ═══════════════════════════════════════════
-   Types
+   Navigation links
    ═══════════════════════════════════════════ */
 
-interface MinaTag {
-  id: string;
-  timestap: number;
-  categoria: string;
-  etiqueta: string;
-  ubicacion: string;
-  [key: string]: unknown;
-}
-
-interface PaginatedResponse {
-  items: MinaTag[];
-  lastEvaluatedKey?: string;
-  count: number;
-  hasMore: boolean;
-}
+const NAV_LINKS = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/plano", label: "Plano" },
+];
 
 /* ═══════════════════════════════════════════
-   Constants
+   Local helpers
    ═══════════════════════════════════════════ */
-
-const CATEGORIES = [
-  { key: "Personal", label: "Personas", accent: "#6FB0E2" },
-  { key: "Maquinaria", label: "Camiones", accent: "#265291" },
-  { key: "Flota vehicular", label: "Vehículos", accent: "#D4A700" },
-] as const;
-
-const POLLING_INTERVAL_MS = 30_000;
-
-/* ═══════════════════════════════════════════
-   Helpers
-   ═══════════════════════════════════════════ */
-
-function tsToDate(ts: number): Date {
-  return new Date(ts < 1e12 ? ts * 1000 : ts);
-}
-
-function formatDate(ts: number): string {
-  const date = tsToDate(ts);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear());
-  return `${day}/${month}/${year}`;
-}
-
-function formatTime(ts: number): string {
-  return tsToDate(ts).toLocaleTimeString("es-CL", { hour12: false });
-}
 
 function isInterior(tag: MinaTag): boolean {
   return String(tag.ubicacion ?? "").toLowerCase().includes("interior");
-}
-
-function getLatestPerEtiqueta(tags: MinaTag[]): MinaTag[] {
-  const map = new Map<string, MinaTag>();
-  for (const tag of tags) {
-    const existing = map.get(tag.etiqueta);
-    if (!existing || tag.timestap > existing.timestap) {
-      map.set(tag.etiqueta, tag);
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => b.timestap - a.timestap);
-}
-
-function hasMeaningfulTagChanges(prev: MinaTag[], next: MinaTag[]): boolean {
-  if (prev.length !== next.length) return true;
-
-  const prevById = new Map(
-    prev.map((tag) => [
-      tag.id,
-      `${tag.timestap}|${tag.categoria}|${tag.etiqueta}|${tag.ubicacion}`,
-    ]),
-  );
-
-  for (const tag of next) {
-    const current = `${tag.timestap}|${tag.categoria}|${tag.etiqueta}|${tag.ubicacion}`;
-    if (prevById.get(tag.id) !== current) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-async function fetchAllMinaTags(): Promise<MinaTag[]> {
-  const all: MinaTag[] = [];
-  let cursor: string | undefined;
-  do {
-    const params = new URLSearchParams({ limit: "100" });
-    if (cursor) params.set("cursor", cursor);
-    const res = await fetchWithAuth<PaginatedResponse>(
-      `/mina-tags?${params.toString()}`,
-    );
-    all.push(...res.items);
-    cursor = res.hasMore ? res.lastEvaluatedKey : undefined;
-  } while (cursor);
-  return all;
 }
 
 /* ═══════════════════════════════════════════
@@ -397,7 +321,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Dashboard" />
+      <DashboardNavbar title="Dashboard" links={NAV_LINKS} />
 
       {/* ── Body ── */}
       <div className="flex min-h-0 flex-1">
@@ -445,7 +369,7 @@ export default function DashboardPage() {
                     Última Información Registrada
                   </h1>
                   <p
-                    className="mt-0.5 text-[0.82rem] text-subtech-dark-blue/70"
+                    className="mt-0.5 text-[0.82rem] text-subtech-dark-blue/85"
                     style={{ fontFamily: "var(--font-dm-sans)" }}
                   >
                     Estado actual de personas, camiones y vehículos en la mina
