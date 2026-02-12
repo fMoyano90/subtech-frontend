@@ -44,7 +44,7 @@ export function TagDetailModal({ tag, onClose }: TagDetailModalProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-lg text-subtech-dark-blue/50 transition-colors hover:bg-subtech-ice hover:text-subtech-dark-blue"
+          className="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-subtech-dark-blue/50 transition-colors hover:bg-subtech-ice hover:text-subtech-dark-blue"
         >
           <svg
             width="16"

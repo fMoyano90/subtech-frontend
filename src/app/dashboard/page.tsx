@@ -10,7 +10,8 @@ import {
   useState,
 } from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
-import { getToken } from "@/lib/auth";
+import { getToken, getTokenPayload } from "@/lib/auth";
+import { getNavLinks } from "@/lib/nav-links";
 import {
   type MinaTag,
   CATEGORIES,
@@ -21,15 +22,6 @@ import {
   hasMeaningfulTagChanges,
   fetchAllMinaTags,
 } from "@/lib/mina-tags";
-
-/* ═══════════════════════════════════════════
-   Navigation links
-   ═══════════════════════════════════════════ */
-
-const NAV_LINKS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/plano", label: "Plano" },
-];
 
 /* ═══════════════════════════════════════════
    Local helpers
@@ -251,6 +243,7 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [filter, setFilter] = useState("");
   const isRefreshingRef = useRef(false);
+  const navLinks = useMemo(() => getNavLinks(getTokenPayload()?.role), []);
 
   const refreshTags = useCallback(
     async ({ silent }: { silent: boolean }) => {
@@ -321,7 +314,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Dashboard" links={NAV_LINKS} />
+      <DashboardNavbar title="Dashboard" links={navLinks} />
 
       {/* ── Body ── */}
       <div className="flex min-h-0 flex-1">

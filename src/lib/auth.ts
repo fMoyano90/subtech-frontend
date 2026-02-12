@@ -46,3 +46,24 @@ export function getToken(): string | null {
 export function removeToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
+
+export interface TokenPayload {
+  sub: string;
+  email: string;
+  businessId: string;
+  role: "admin" | "user";
+}
+
+export function getTokenPayload(): TokenPayload | null {
+  const token = getToken();
+  if (!token) return null;
+
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload as TokenPayload;
+  } catch {
+    return null;
+  }
+}

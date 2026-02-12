@@ -13,7 +13,8 @@ import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { LevelCard } from "@/components/plano/level-card";
 import { ExteriorCard } from "@/components/plano/exterior-card";
 import { PlanoSidebar } from "@/components/plano/plano-sidebar";
-import { getToken } from "@/lib/auth";
+import { getToken, getTokenPayload } from "@/lib/auth";
+import { getNavLinks } from "@/lib/nav-links";
 import {
   type MinaTag,
   CATEGORIES,
@@ -26,11 +27,6 @@ import {
 /* ═══════════════════════════════════════════
    Constants
    ═══════════════════════════════════════════ */
-
-const NAV_LINKS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/plano", label: "Plano" },
-];
 
 const LEVELS = [
   { ubicacion: "Niveles Superiores", label: "Niveles Superiores", svg: "/mapa-mina-nivel-1.svg" },
@@ -50,6 +46,7 @@ export default function PlanoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const isRefreshingRef = useRef(false);
+  const navLinks = useMemo(() => getNavLinks(getTokenPayload()?.role), []);
 
   /* Sidebar state */
   const [sidebarLevel, setSidebarLevel] = useState("");
@@ -146,7 +143,7 @@ export default function PlanoPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Plano" links={NAV_LINKS} />
+      <DashboardNavbar title="Plano" links={navLinks} />
 
       {/* ── Body ── */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
