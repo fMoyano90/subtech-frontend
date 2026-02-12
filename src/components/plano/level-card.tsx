@@ -42,7 +42,7 @@ export function LevelCard({
               key={cat.key}
               onClick={() => onCounterClick(cat.key)}
               title={cat.label}
-              className={`flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-[0.75rem] font-semibold backdrop-blur-sm transition-colors ${
+              className={`flex w-fit cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-[0.75rem] font-semibold backdrop-blur-sm transition-colors ${
                 isActive
                   ? "bg-subtech-dark-blue text-white shadow-sm"
                   : "bg-white/80 text-subtech-dark-blue shadow-sm hover:bg-white"

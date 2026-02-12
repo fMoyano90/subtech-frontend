@@ -306,7 +306,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn-press group relative h-[52px] w-full overflow-hidden rounded-xl bg-subtech-dark-blue font-semibold text-white shadow-lg shadow-subtech-dark-blue/20 transition-all duration-200 hover:shadow-xl hover:shadow-subtech-dark-blue/30 disabled:opacity-70"
+                className="btn-press group relative h-[52px] w-full cursor-pointer overflow-hidden rounded-xl bg-subtech-dark-blue font-semibold text-white shadow-lg shadow-subtech-dark-blue/20 transition-all duration-200 hover:shadow-xl hover:shadow-subtech-dark-blue/30 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {/* Yellow accent bar on hover */}
                 <div className="absolute bottom-0 left-0 h-[3px] w-0 bg-subtech-yellow transition-all duration-300 group-hover:w-full" />

@@ -71,7 +71,7 @@ export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps
       <button
         type="button"
         onClick={handleLogout}
-        className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[0.8rem] font-medium text-subtech-dark-blue/75 transition-colors hover:bg-subtech-ice hover:text-subtech-dark-blue"
+        className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[0.8rem] font-medium text-subtech-dark-blue/75 transition-colors hover:bg-subtech-ice hover:text-subtech-dark-blue"
         style={{ fontFamily: "var(--font-dm-sans)" }}
       >
         <svg

@@ -27,7 +27,7 @@ export function ExteriorCard({
                 key={cat.key}
                 onClick={() => onCounterClick(cat.key)}
                 title={cat.label}
-                className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[0.75rem] font-semibold transition-colors ${
+                className={`flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[0.75rem] font-semibold transition-colors ${
                   isActive
                     ? "border-subtech-dark-blue bg-subtech-dark-blue text-white"
                     : "border-subtech-light-blue/50 bg-subtech-ice/50 text-subtech-dark-blue hover:border-subtech-dark-blue/30 hover:bg-subtech-ice"

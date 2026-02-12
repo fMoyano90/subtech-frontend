@@ -406,7 +406,7 @@ export default function DashboardPage() {
           {/* Toggle button */}
           <button
             onClick={() => setSidebarOpen((o) => !o)}
-            className="absolute -left-3.5 top-5 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-subtech-light-blue/50 bg-white text-subtech-dark-blue/80 shadow-sm transition-colors hover:bg-subtech-dark-blue hover:text-white"
+            className="absolute -left-3.5 top-5 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-subtech-light-blue/50 bg-white text-subtech-dark-blue/80 shadow-sm transition-colors hover:bg-subtech-dark-blue hover:text-white"
           >
             <svg
               width="14"
