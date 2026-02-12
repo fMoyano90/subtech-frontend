@@ -48,6 +48,11 @@ export default function PlanoPage() {
   const isRefreshingRef = useRef(false);
   const navLinks = useMemo(() => getNavLinks(getTokenPayload()?.role), []);
 
+  /* Image preloading — show skeleton until all maps are loaded */
+  const [imagesLoaded, setImagesLoaded] = useState(0);
+  const imagesReady = imagesLoaded >= LEVELS.length;
+  const handleImageLoad = useCallback(() => setImagesLoaded((c) => c + 1), []);
+
   /* Sidebar state */
   const [sidebarLevel, setSidebarLevel] = useState("");
   const [sidebarCategory, setSidebarCategory] = useState("");
@@ -198,8 +203,20 @@ export default function PlanoPage() {
                   </p>
                 </div>
 
-                {/* Unified mine cross-section */}
-                <div className="animate-slide-up opacity-0">
+                {/* Skeleton while images load */}
+                {!imagesReady && (
+                  <div className="space-y-5">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="h-52 animate-pulse rounded-xl bg-white/70"
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Unified mine cross-section — render hidden until images ready */}
+                <div className={imagesReady ? "animate-slide-up opacity-0" : "invisible absolute"}>
                   <div className="divide-y divide-subtech-dark-blue/20 overflow-hidden rounded-xl bg-white shadow-[0_1px_4px_rgba(38,82,145,0.07)]">
                     {LEVELS.map((level) => (
                       <LevelCard
@@ -215,6 +232,7 @@ export default function PlanoPage() {
                         onCounterClick={(cat) =>
                           handleCounterClick(level.ubicacion, cat)
                         }
+                        onImageLoad={handleImageLoad}
                       />
                     ))}
                   </div>
@@ -222,8 +240,8 @@ export default function PlanoPage() {
 
                 {/* Exterior card */}
                 <div
-                  className="mt-4 animate-slide-up opacity-0"
-                  style={{ animationDelay: "100ms" }}
+                  className={imagesReady ? "mt-4 animate-slide-up opacity-0" : "invisible absolute"}
+                  style={imagesReady ? { animationDelay: "100ms" } : undefined}
                 >
                   <ExteriorCard
                     counts={countsFor(EXTERIOR_KEY)}

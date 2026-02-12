@@ -7,6 +7,7 @@ interface LevelCardProps {
   counts: Record<string, number>;
   activeCategory: string | null;
   onCounterClick: (category: string) => void;
+  onImageLoad?: () => void;
 }
 
 export function LevelCard({
@@ -15,6 +16,7 @@ export function LevelCard({
   counts,
   activeCategory,
   onCounterClick,
+  onImageLoad,
 }: LevelCardProps) {
   return (
     <div className="relative min-h-[220px]">
@@ -24,8 +26,8 @@ export function LevelCard({
         <img
           src={svgSrc}
           alt={`Mapa ${name}`}
-          loading="lazy"
           className="block w-full"
+          onLoad={onImageLoad}
         />
       </div>
 
