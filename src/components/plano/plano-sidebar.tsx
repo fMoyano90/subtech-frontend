@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { type MinaTag, CATEGORIES, formatDate, formatTime } from "@/lib/mina-tags";
+import { getLocationPresentation } from "@/lib/location-status";
 import { TagDetailModal } from "./tag-detail-modal";
 
 interface PlanoSidebarProps {
@@ -19,6 +20,7 @@ export function PlanoSidebar({
   const hasSelection = level !== "" && category !== "";
   const catMeta = CATEGORIES.find((c) => c.key === category);
   const label = catMeta?.label ?? category;
+  const levelLocation = getLocationPresentation(level);
 
   return (
     <aside className="w-[370px] shrink-0 border-l border-subtech-light-blue/30 bg-white">
@@ -26,8 +28,15 @@ export function PlanoSidebar({
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="shrink-0 border-b border-subtech-light-blue/25 px-4 pb-3 pt-4">
-            <span className="inline-block rounded-md bg-subtech-dark-blue px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.1em] text-white">
-              {level}
+            <span
+              className="inline-block rounded-md border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.1em]"
+              style={{
+                color: levelLocation.color,
+                backgroundColor: levelLocation.background,
+                borderColor: levelLocation.border,
+              }}
+            >
+              {levelLocation.label}
             </span>
             <h2 className="mt-2 text-[0.85rem] font-bold uppercase tracking-[0.12em] text-subtech-dark-blue">
               {label}

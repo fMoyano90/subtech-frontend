@@ -11,6 +11,10 @@ import {
 } from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { getToken, getTokenPayload } from "@/lib/auth";
+import {
+  getLocationPresentation,
+  isInteriorMinaLocation,
+} from "@/lib/location-status";
 import { getNavLinks } from "@/lib/nav-links";
 import {
   type MinaTag,
@@ -28,7 +32,7 @@ import {
    ═══════════════════════════════════════════ */
 
 function isInterior(tag: MinaTag): boolean {
-  return String(tag.ubicacion ?? "").toLowerCase().includes("interior");
+  return isInteriorMinaLocation(tag.ubicacion);
 }
 
 /* ═══════════════════════════════════════════
@@ -173,7 +177,9 @@ function CategorySection({
                 </tr>
               </thead>
               <tbody>
-                {latest.map((tag) => (
+                {latest.map((tag) => {
+                  const location = getLocationPresentation(tag.ubicacion);
+                  return (
                   <tr
                     key={tag.id}
                     className="border-b border-subtech-ice/80 transition-colors last:border-0 hover:bg-subtech-ice/50"
@@ -183,13 +189,14 @@ function CategorySection({
                     </td>
                     <td className="py-2 pr-4">
                       <span
-                        className={`inline-flex rounded-md px-2 py-0.5 text-[0.7rem] font-medium ${
-                          isInterior(tag)
-                            ? "bg-[#265291]/10 text-subtech-dark-blue"
-                            : "bg-[#6FB0E2]/15 text-subtech-blue"
-                        }`}
+                        className="inline-flex rounded-md border px-2 py-0.5 text-[0.7rem] font-semibold"
+                        style={{
+                          color: location.color,
+                          backgroundColor: location.background,
+                          borderColor: location.border,
+                        }}
                       >
-                        {tag.ubicacion}
+                        {location.label}
                       </span>
                     </td>
                     <td className="py-2 pr-4 tabular-nums text-subtech-dark-blue/80">
@@ -199,7 +206,8 @@ function CategorySection({
                       {formatDate(tag.timestap)}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
@@ -509,7 +517,9 @@ export default function DashboardPage() {
                       </td>
                     </tr>
                   ) : (
-                    history.map((tag) => (
+                    history.map((tag) => {
+                      const location = getLocationPresentation(tag.ubicacion);
+                      return (
                       <tr
                         key={tag.id}
                         className="border-b border-subtech-ice/60 transition-colors hover:bg-subtech-ice/40"
@@ -525,17 +535,15 @@ export default function DashboardPage() {
                         </td>
                         <td className="py-1.5">
                           <span
-                            className={`text-[0.65rem] font-medium ${
-                              isInterior(tag)
-                                ? "text-subtech-dark-blue"
-                                : "text-subtech-blue"
-                            }`}
+                            className="text-[0.65rem] font-medium"
+                            style={{ color: location.color }}
                           >
-                            {tag.ubicacion}
+                            {location.label}
                           </span>
                         </td>
                       </tr>
-                    ))
+                      );
+                    })
                   )}
                 </tbody>
               </table>

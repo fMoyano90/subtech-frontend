@@ -2,18 +2,27 @@
 
 import { useEffect } from "react";
 import { type MinaTag, formatDate, formatTime } from "@/lib/mina-tags";
+import { getLocationPresentation } from "@/lib/location-status";
 
 interface TagDetailModalProps {
   tag: MinaTag | null;
   onClose: () => void;
 }
 
-const FIELDS: { label: string; getValue: (t: MinaTag) => string }[] = [
+const FIELDS: {
+  label: string;
+  isLocation?: boolean;
+  getValue: (t: MinaTag) => string;
+}[] = [
   { label: "Etiqueta", getValue: (t) => t.etiqueta },
   { label: "UID", getValue: (t) => t.uid },
   { label: "Categoría", getValue: (t) => t.categoria },
   { label: "Subcategoría", getValue: (t) => t.subcategoria },
-  { label: "Ubicación", getValue: (t) => t.ubicacion },
+  {
+    label: "Ubicación",
+    isLocation: true,
+    getValue: (t) => getLocationPresentation(t.ubicacion).label,
+  },
   { label: "Pórtico", getValue: (t) => t.portico },
   { label: "Fecha", getValue: (t) => formatDate(t.timestap) },
   { label: "Hora", getValue: (t) => formatTime(t.timestap) },
@@ -76,15 +85,21 @@ export function TagDetailModal({ tag, onClose }: TagDetailModalProps) {
           className="mt-4 divide-y divide-subtech-light-blue/20"
           style={{ fontFamily: "var(--font-dm-sans)" }}
         >
-          {FIELDS.map(({ label, getValue }) => {
+          {FIELDS.map(({ label, getValue, isLocation }) => {
             const value = getValue(tag);
             if (!value) return null;
+            const location = isLocation
+              ? getLocationPresentation(tag.ubicacion)
+              : null;
             return (
               <div key={label} className="flex items-center justify-between py-2.5">
                 <span className="text-[0.72rem] font-semibold uppercase tracking-wider text-subtech-dark-blue/60">
                   {label}
                 </span>
-                <span className="text-[0.78rem] font-medium text-subtech-dark-blue">
+                <span
+                  className="text-[0.78rem] font-medium text-subtech-dark-blue"
+                  style={location ? { color: location.color } : undefined}
+                >
                   {value}
                 </span>
               </div>

@@ -1,4 +1,5 @@
 import { CATEGORIES } from "@/lib/mina-tags";
+import { getLocationPresentation } from "@/lib/location-status";
 import { CategoryIcon } from "./category-icon";
 
 interface LevelCardProps {
@@ -18,6 +19,8 @@ export function LevelCard({
   onCounterClick,
   onImageLoad,
 }: LevelCardProps) {
+  const location = getLocationPresentation(name);
+
   return (
     <div className="relative min-h-[220px]">
       {/* Map — full bleed, no padding */}
@@ -33,8 +36,15 @@ export function LevelCard({
 
       {/* Floating overlay — top-left corner inside the map */}
       <div className="absolute left-4 top-4 flex flex-col gap-2.5">
-        <span className="w-fit rounded-md bg-subtech-dark-blue/80 px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-white backdrop-blur-sm">
-          {name}
+        <span
+          className="w-fit rounded-md border px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] backdrop-blur-sm"
+          style={{
+            color: location.color,
+            backgroundColor: location.background,
+            borderColor: location.border,
+          }}
+        >
+          {location.label}
         </span>
         {CATEGORIES.map((cat) => {
           const count = counts[cat.key] ?? 0;

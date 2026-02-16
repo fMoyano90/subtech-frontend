@@ -1,4 +1,5 @@
 import { CATEGORIES } from "@/lib/mina-tags";
+import { getLocationPresentation } from "@/lib/location-status";
 import { CategoryIcon } from "./category-icon";
 
 interface ExteriorCardProps {
@@ -12,12 +13,21 @@ export function ExteriorCard({
   activeCategory,
   onCounterClick,
 }: ExteriorCardProps) {
+  const exterior = getLocationPresentation("Exterior Mina - 840");
+
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-[0_1px_4px_rgba(38,82,145,0.07)]">
       <div className="flex items-center justify-between px-5 py-4">
-        <h3 className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-subtech-dark-blue">
-          Exterior Mina
-        </h3>
+        <span
+          className="inline-flex rounded-md border px-2 py-0.5 text-[0.8rem] font-bold uppercase tracking-[0.12em]"
+          style={{
+            color: exterior.color,
+            backgroundColor: exterior.background,
+            borderColor: exterior.border,
+          }}
+        >
+          {exterior.label}
+        </span>
         <div className="flex items-center gap-2">
           {CATEGORIES.map((cat) => {
             const count = counts[cat.key] ?? 0;

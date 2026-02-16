@@ -28,7 +28,14 @@ export async function fetchWithAuth<T = unknown>(
   }
 
   if (!res.ok) {
-    throw new Error(`Error del servidor (${res.status})`);
+    const body = await res.json().catch(() => null);
+    const rawMessage = body?.message;
+    const message = Array.isArray(rawMessage)
+      ? rawMessage[0]
+      : typeof rawMessage === "string"
+        ? rawMessage
+        : `Error del servidor (${res.status})`;
+    throw new Error(message);
   }
 
   return res.json();
