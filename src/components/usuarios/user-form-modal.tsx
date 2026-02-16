@@ -18,6 +18,7 @@ export function UserFormModal({
 }: UserFormModalProps) {
   const isEdit = !!user;
 
+  const [company, setCompany] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [rut, setRut] = useState("");
@@ -30,6 +31,7 @@ export function UserFormModal({
 
   useEffect(() => {
     if (open) {
+      setCompany(user?.company ?? "");
       setName(user?.name ?? "");
       setEmail(user?.email ?? "");
       setRut(user?.rut ?? "");
@@ -52,6 +54,7 @@ export function UserFormModal({
       const data: Record<string, string> = {};
       if (!isEdit) {
         // Create: all fields required
+        data.company = company;
         data.name = name;
         data.email = email;
         data.rut = rut;
@@ -60,6 +63,7 @@ export function UserFormModal({
         data.password = password;
       } else {
         // Edit: only changed fields
+        if (company !== user!.company) data.company = company;
         if (name !== user!.name) data.name = name;
         if (phone !== user!.phone) data.phone = phone;
         if (occupation !== user!.occupation) data.occupation = occupation;
@@ -82,6 +86,21 @@ export function UserFormModal({
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+          {/* Company */}
+          <div>
+            <label className="mb-1 block text-[0.7rem] font-bold uppercase tracking-wider text-subtech-dark-blue/70">
+              Empresa
+            </label>
+            <input
+              type="text"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
+              className="h-9 w-full rounded-lg border border-subtech-light-blue/50 bg-subtech-ice/50 px-3 text-[0.8rem] text-subtech-dark-blue transition-colors focus:border-subtech-dark-blue focus:shadow-[0_0_0_3px_rgba(38,82,145,0.06)]"
+              style={{ fontFamily: "var(--font-dm-sans)" }}
+            />
+          </div>
+
           {/* Name */}
           <div>
             <label className="mb-1 block text-[0.7rem] font-bold uppercase tracking-wider text-subtech-dark-blue/70">

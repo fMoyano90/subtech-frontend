@@ -2,6 +2,7 @@
 
 export interface UserRow {
   id: string;
+  company: string;
   name: string;
   email: string;
   rut: string;
@@ -45,6 +46,7 @@ export function UsersTable({
         >
           <thead>
             <tr className="border-b border-subtech-light-blue/40 text-[0.7rem] font-bold uppercase tracking-wider text-subtech-dark-blue/70">
+              <th className="px-5 py-3 pr-4">Empresa</th>
               <th className="px-5 py-3 pr-4">Nombre</th>
               <th className="px-5 py-3 pr-4">Email</th>
               <th className="px-5 py-3 pr-4">RUT</th>
@@ -60,6 +62,9 @@ export function UsersTable({
                 key={user.id}
                 className="border-b border-subtech-ice/80 transition-colors last:border-0 hover:bg-subtech-ice/50"
               >
+                <td className="px-5 py-3 pr-4 text-subtech-dark-blue/80">
+                  {user.company || "-"}
+                </td>
                 <td className="px-5 py-3 pr-4 font-medium text-subtech-dark-blue">
                   {user.name}
                 </td>

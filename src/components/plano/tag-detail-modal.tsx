@@ -15,7 +15,6 @@ const FIELDS: {
   getValue: (t: MinaTag) => string;
 }[] = [
   { label: "Etiqueta", getValue: (t) => t.etiqueta },
-  { label: "UID", getValue: (t) => t.uid },
   { label: "Categoría", getValue: (t) => t.categoria },
   { label: "Subcategoría", getValue: (t) => t.subcategoria },
   {
