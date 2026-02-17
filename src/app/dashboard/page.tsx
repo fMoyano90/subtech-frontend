@@ -171,7 +171,7 @@ function CategorySection({
               <thead>
                 <tr className="border-b border-subtech-light-blue/40 text-[0.7rem] font-bold uppercase tracking-wider text-subtech-dark-blue/70">
                   <th className="pb-2 pr-4">Asignación</th>
-                  <th className="pb-2 pr-4">A/F</th>
+                  <th className="pb-2 pr-4">Ubicación</th>
                   <th className="pb-2 pr-4">Hora</th>
                   <th className="pb-2">Fecha</th>
                 </tr>
@@ -503,7 +503,7 @@ export default function DashboardPage() {
                     <th className="pb-1.5 pr-2">Nombre</th>
                     <th className="pb-1.5 pr-2">Fecha</th>
                     <th className="pb-1.5 pr-2">Hora</th>
-                    <th className="pb-1.5">A/F</th>
+                    <th className="pb-1.5">Ubicación</th>
                   </tr>
                 </thead>
                 <tbody>

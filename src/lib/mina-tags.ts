@@ -51,6 +51,7 @@ export const CATEGORIES = [
 ] as const;
 
 export const POLLING_INTERVAL_MS = 30_000;
+export const CHILE_TIME_ZONE = "America/Santiago";
 
 /* ═══════════════════════════════════════════
    Helpers
@@ -60,16 +61,31 @@ export function tsToDate(ts: number): Date {
   return new Date(ts < 1e12 ? ts * 1000 : ts);
 }
 
+const chileDateFormatter = new Intl.DateTimeFormat("es-CL", {
+  timeZone: CHILE_TIME_ZONE,
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
+const chileTimeFormatter = new Intl.DateTimeFormat("es-CL", {
+  timeZone: CHILE_TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
+
 export function formatDate(ts: number): string {
-  const date = tsToDate(ts);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear());
+  const parts = chileDateFormatter.formatToParts(tsToDate(ts));
+  const day = parts.find((part) => part.type === "day")?.value ?? "00";
+  const month = parts.find((part) => part.type === "month")?.value ?? "00";
+  const year = parts.find((part) => part.type === "year")?.value ?? "0000";
   return `${day}/${month}/${year}`;
 }
 
 export function formatTime(ts: number): string {
-  return tsToDate(ts).toLocaleTimeString("es-CL", { hour12: false });
+  return chileTimeFormatter.format(tsToDate(ts));
 }
 
 export function normalizeTag(raw: MinaTagRaw): MinaTag {
