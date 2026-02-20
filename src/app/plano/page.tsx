@@ -14,6 +14,7 @@ import { LevelCard } from "@/components/plano/level-card";
 import { ExteriorCard } from "@/components/plano/exterior-card";
 import { PlanoSidebar } from "@/components/plano/plano-sidebar";
 import { getToken, getTokenPayload } from "@/lib/auth";
+import { EXTERIOR_MINA_STATUS, isExteriorMinaLocation } from "@/lib/location-status";
 import { getNavLinks } from "@/lib/nav-links";
 import {
   type MinaTag,
@@ -34,7 +35,7 @@ const LEVELS = [
   { ubicacion: "Niveles Inferiores", label: "Niveles Inferiores", svg: "/mapa-mina-nivel-3.svg" },
 ] as const;
 
-const EXTERIOR_KEY = "Exterior Mina - 840";
+const EXTERIOR_KEY = EXTERIOR_MINA_STATUS;
 
 /* ═══════════════════════════════════════════
    Plano Page
@@ -109,7 +110,10 @@ export default function PlanoPage() {
   const byUbicacion = useMemo(() => {
     const m = new Map<string, MinaTag[]>();
     for (const tag of latest) {
-      const key = tag.ubicacion;
+      const rawLocation = String(tag.ubicacion ?? "").trim();
+      const key = isExteriorMinaLocation(rawLocation)
+        ? EXTERIOR_KEY
+        : rawLocation || "Ubicación desconocida";
       const arr = m.get(key);
       if (arr) arr.push(tag);
       else m.set(key, [tag]);
@@ -199,7 +203,7 @@ export default function PlanoPage() {
                     className="mt-0.5 text-[0.82rem] text-subtech-dark-blue/85"
                     style={{ fontFamily: "var(--font-dm-sans)" }}
                   >
-                    Vista por niveles con ubicación de personas, camiones y vehículos
+                    Vista por niveles con ubicación de personas, maquinaria y vehículos
                   </p>
                 </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { type MinaTag, CATEGORIES, formatDate, formatTime } from "@/lib/mina-tags";
-import { getLocationPresentation } from "@/lib/location-status";
+import { getLocationPresentation, isExteriorMinaLocation } from "@/lib/location-status";
 import { TagDetailModal } from "./tag-detail-modal";
 
 interface PlanoSidebarProps {
@@ -21,6 +21,7 @@ export function PlanoSidebar({
   const catMeta = CATEGORIES.find((c) => c.key === category);
   const label = catMeta?.label ?? category;
   const levelLocation = getLocationPresentation(level);
+  const showLocationColumn = isExteriorMinaLocation(level);
 
   return (
     <aside className="w-[370px] shrink-0 border-l border-subtech-light-blue/30 bg-white">
@@ -60,13 +61,14 @@ export function PlanoSidebar({
                   <th className="pb-1.5 pr-2">Nombre</th>
                   <th className="pb-1.5 pr-2">Fecha</th>
                   <th className="pb-1.5">Hora</th>
+                  {showLocationColumn && <th className="pb-1.5 pl-2">Ubicación</th>}
                 </tr>
               </thead>
               <tbody>
                 {tags.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={3}
+                      colSpan={showLocationColumn ? 4 : 3}
                       className="py-8 text-center text-subtech-dark-blue/55"
                     >
                       Sin registros
@@ -88,6 +90,11 @@ export function PlanoSidebar({
                       <td className="py-1.5 tabular-nums text-subtech-dark-blue/90">
                         {formatTime(tag.timestap)}
                       </td>
+                      {showLocationColumn && (
+                        <td className="py-1.5 pl-2 text-[0.68rem] font-medium text-subtech-dark-blue/75">
+                          {getLocationPresentation(tag.ubicacion).label}
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}

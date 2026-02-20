@@ -35,6 +35,14 @@ function isInterior(tag: MinaTag): boolean {
   return isInteriorMinaLocation(tag.ubicacion);
 }
 
+type CategoryKey = (typeof CATEGORIES)[number]["key"];
+
+function getSubcategoryColumnLabel(categoryKey: CategoryKey): string | null {
+  if (categoryKey === "Personal") return "Cargo";
+  if (categoryKey === "Maquinaria") return "Operación unitaria";
+  return null;
+}
+
 /* ═══════════════════════════════════════════
    SVG Donut Chart
    ═══════════════════════════════════════════ */
@@ -130,16 +138,19 @@ function DonutChart({
    ═══════════════════════════════════════════ */
 
 function CategorySection({
+  categoryKey,
   label,
   accent,
   tags,
 }: {
+  categoryKey: CategoryKey;
   label: string;
   accent: string;
   tags: MinaTag[];
 }) {
   const latest = useMemo(() => getLatestPerEtiqueta(tags), [tags]);
   const interiorCount = latest.filter(isInterior).length;
+  const subcategoryColumnLabel = getSubcategoryColumnLabel(categoryKey);
 
   return (
     <div
@@ -171,6 +182,9 @@ function CategorySection({
               <thead>
                 <tr className="border-b border-subtech-light-blue/40 text-[0.7rem] font-bold uppercase tracking-wider text-subtech-dark-blue/70">
                   <th className="pb-2 pr-4">Asignación</th>
+                  {subcategoryColumnLabel && (
+                    <th className="pb-2 pr-4">{subcategoryColumnLabel}</th>
+                  )}
                   <th className="pb-2 pr-4">Ubicación</th>
                   <th className="pb-2 pr-4">Hora</th>
                   <th className="pb-2">Fecha</th>
@@ -187,6 +201,11 @@ function CategorySection({
                     <td className="py-2 pr-4 font-medium text-subtech-dark-blue">
                       {tag.etiqueta}
                     </td>
+                    {subcategoryColumnLabel && (
+                      <td className="py-2 pr-4 text-subtech-dark-blue/80">
+                        {tag.subcategoria || "Sin dato"}
+                      </td>
+                    )}
                     <td className="py-2 pr-4">
                       <span
                         className="inline-flex rounded-md border px-2 py-0.5 text-[0.7rem] font-semibold"
@@ -373,7 +392,7 @@ export default function DashboardPage() {
                     className="mt-0.5 text-[0.82rem] text-subtech-dark-blue/85"
                     style={{ fontFamily: "var(--font-dm-sans)" }}
                   >
-                    Estado actual de personas, camiones y vehículos en la mina
+                    Estado actual de personas, maquinaria y vehículos en la mina
                   </p>
                 </div>
 
@@ -386,6 +405,7 @@ export default function DashboardPage() {
                       style={{ animationDelay: `${i * 100}ms` }}
                     >
                       <CategorySection
+                        categoryKey={cat.key}
                         label={cat.label}
                         accent={cat.accent}
                         tags={grouped.get(cat.key) ?? []}

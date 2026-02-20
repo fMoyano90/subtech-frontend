@@ -1,5 +1,5 @@
 import { CATEGORIES } from "@/lib/mina-tags";
-import { getLocationPresentation } from "@/lib/location-status";
+import { EXTERIOR_MINA_STATUS, getLocationPresentation } from "@/lib/location-status";
 import { CategoryIcon } from "./category-icon";
 
 interface ExteriorCardProps {
@@ -13,7 +13,7 @@ export function ExteriorCard({
   activeCategory,
   onCounterClick,
 }: ExteriorCardProps) {
-  const exterior = getLocationPresentation("Exterior Mina - 840");
+  const exterior = getLocationPresentation(EXTERIOR_MINA_STATUS);
 
   return (
     <div className="overflow-hidden rounded-xl bg-white shadow-[0_1px_4px_rgba(38,82,145,0.07)]">

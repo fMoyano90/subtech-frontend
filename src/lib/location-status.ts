@@ -1,8 +1,10 @@
+export const EXTERIOR_MINA_STATUS = "Mina exterior" as const;
+
 export type KnownLocationStatus =
   | "Niveles Superiores"
   | "Niveles Medios"
   | "Niveles Inferiores"
-  | "Exterior Mina - 840"
+  | typeof EXTERIOR_MINA_STATUS
   | "Ubicación desconocida";
 
 interface LocationPalette {
@@ -27,7 +29,7 @@ const LOCATION_PALETTE: Record<KnownLocationStatus, LocationPalette> = {
     background: "rgba(230, 126, 34, 0.14)",
     border: "rgba(230, 126, 34, 0.34)",
   },
-  "Exterior Mina - 840": {
+  [EXTERIOR_MINA_STATUS]: {
     color: "#265291",
     background: "rgba(38, 82, 145, 0.12)",
     border: "rgba(38, 82, 145, 0.32)",
@@ -48,6 +50,8 @@ function normalizeLocation(value: string): string {
     .replace(/\s+/g, " ");
 }
 
+const EXTERIOR_MINA_PATTERN = /^(mina exterior|exterior mina)(\s*-\s*.+)?$/;
+
 function resolveKnownLocation(
   location: string,
 ): KnownLocationStatus | null {
@@ -57,7 +61,7 @@ function resolveKnownLocation(
   if (normalized.includes("niveles superiores")) return "Niveles Superiores";
   if (normalized.includes("niveles medios")) return "Niveles Medios";
   if (normalized.includes("niveles inferiores")) return "Niveles Inferiores";
-  if (normalized.includes("exterior mina")) return "Exterior Mina - 840";
+  if (EXTERIOR_MINA_PATTERN.test(normalized)) return EXTERIOR_MINA_STATUS;
   if (normalized.includes("desconocid")) return "Ubicación desconocida";
 
   return null;
@@ -76,10 +80,11 @@ export function getLocationPresentation(location?: string | null): LocationPrese
   const known = resolveKnownLocation(raw);
   const status = known ?? "Ubicación desconocida";
   const palette = LOCATION_PALETTE[status];
+  const isExterior = status === EXTERIOR_MINA_STATUS;
 
   return {
     status,
-    label: known ? known : raw || "Ubicación desconocida",
+    label: isExterior && raw ? raw : known ? known : raw || "Ubicación desconocida",
     color: palette.color,
     background: palette.background,
     border: palette.border,
@@ -95,4 +100,9 @@ const INTERIOR_STATUSES: ReadonlySet<KnownLocationStatus> = new Set([
 export function isInteriorMinaLocation(location?: string | null): boolean {
   const { status } = getLocationPresentation(location);
   return INTERIOR_STATUSES.has(status);
+}
+
+export function isExteriorMinaLocation(location?: string | null): boolean {
+  const { status } = getLocationPresentation(location);
+  return status === EXTERIOR_MINA_STATUS;
 }

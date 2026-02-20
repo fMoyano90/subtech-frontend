@@ -46,12 +46,12 @@ export interface PaginatedResponse {
 
 export const CATEGORIES = [
   { key: "Personal", label: "Personas", accent: "#6FB0E2" },
-  { key: "Maquinaria", label: "Camiones", accent: "#265291" },
+  { key: "Maquinaria", label: "Maquinaria", accent: "#265291" },
   { key: "Flota Vehicular", label: "Vehículos", accent: "#D4A700" },
 ] as const;
 
 export const POLLING_INTERVAL_MS = 30_000;
-export const CHILE_TIME_ZONE = "America/Santiago";
+const DISPLAY_TIME_ZONE = "UTC";
 
 /* ═══════════════════════════════════════════
    Helpers
@@ -61,15 +61,15 @@ export function tsToDate(ts: number): Date {
   return new Date(ts < 1e12 ? ts * 1000 : ts);
 }
 
-const chileDateFormatter = new Intl.DateTimeFormat("es-CL", {
-  timeZone: CHILE_TIME_ZONE,
+const localDateFormatter = new Intl.DateTimeFormat("es-CL", {
+  timeZone: DISPLAY_TIME_ZONE,
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
 });
 
-const chileTimeFormatter = new Intl.DateTimeFormat("es-CL", {
-  timeZone: CHILE_TIME_ZONE,
+const localTimeFormatter = new Intl.DateTimeFormat("es-CL", {
+  timeZone: DISPLAY_TIME_ZONE,
   hour: "2-digit",
   minute: "2-digit",
   second: "2-digit",
@@ -77,7 +77,7 @@ const chileTimeFormatter = new Intl.DateTimeFormat("es-CL", {
 });
 
 export function formatDate(ts: number): string {
-  const parts = chileDateFormatter.formatToParts(tsToDate(ts));
+  const parts = localDateFormatter.formatToParts(tsToDate(ts));
   const day = parts.find((part) => part.type === "day")?.value ?? "00";
   const month = parts.find((part) => part.type === "month")?.value ?? "00";
   const year = parts.find((part) => part.type === "year")?.value ?? "0000";
@@ -85,7 +85,7 @@ export function formatDate(ts: number): string {
 }
 
 export function formatTime(ts: number): string {
-  return chileTimeFormatter.format(tsToDate(ts));
+  return localTimeFormatter.format(tsToDate(ts));
 }
 
 export function normalizeTag(raw: MinaTagRaw): MinaTag {
