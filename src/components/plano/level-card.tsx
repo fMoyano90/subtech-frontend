@@ -4,6 +4,7 @@ import { CategoryIcon } from "./category-icon";
 
 interface LevelCardProps {
   name: string;
+  range: string;
   svgSrc: string;
   counts: Record<string, number>;
   activeCategory: string | null;
@@ -13,6 +14,7 @@ interface LevelCardProps {
 
 export function LevelCard({
   name,
+  range,
   svgSrc,
   counts,
   activeCategory,
@@ -36,16 +38,27 @@ export function LevelCard({
 
       {/* Floating overlay — top-left corner inside the map */}
       <div className="absolute left-4 top-4 flex flex-col gap-2.5">
-        <span
-          className="w-fit rounded-md border px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] backdrop-blur-sm"
-          style={{
-            color: location.color,
-            backgroundColor: location.background,
-            borderColor: location.border,
-          }}
-        >
-          {location.label}
-        </span>
+        <div className="w-fit">
+          <span
+            className="block w-fit rounded-md border px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.1em] backdrop-blur-sm"
+            style={{
+              color: location.color,
+              backgroundColor: location.background,
+              borderColor: location.border,
+            }}
+          >
+            {location.label}
+          </span>
+          <p
+            className="mt-1 text-[0.78rem] font-semibold tracking-[0.01em] drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]"
+            style={{
+              color: "#2F4C7A",
+              fontFamily: "var(--font-dm-sans)",
+            }}
+          >
+            {range}
+          </p>
+        </div>
         {CATEGORIES.map((cat) => {
           const count = counts[cat.key] ?? 0;
           const isActive = activeCategory === cat.key;

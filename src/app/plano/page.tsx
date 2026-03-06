@@ -30,9 +30,24 @@ import {
    ═══════════════════════════════════════════ */
 
 const LEVELS = [
-  { ubicacion: "Niveles Superiores", label: "Niveles Superiores", svg: "/mapa-mina-nivel-1.svg" },
-  { ubicacion: "Niveles Medios", label: "Niveles Medios", svg: "/mapa-mina-nivel-2.svg" },
-  { ubicacion: "Niveles Inferiores", label: "Niveles Inferiores", svg: "/mapa-mina-nivel-3.svg" },
+  {
+    ubicacion: "Niveles Superiores",
+    label: "Niveles Superiores",
+    range: "Cota 840 - Salida superficie 950",
+    svg: "/mapa-mina-nivel-1.svg",
+  },
+  {
+    ubicacion: "Niveles Medios",
+    label: "Niveles Medios",
+    range: "Cota 840 - Cota 785",
+    svg: "/mapa-mina-nivel-2.svg",
+  },
+  {
+    ubicacion: "Niveles Inferiores",
+    label: "Niveles Inferiores",
+    range: "Cota 785 - Cota 740",
+    svg: "/mapa-mina-nivel-3.svg",
+  },
 ] as const;
 
 const EXTERIOR_KEY = EXTERIOR_MINA_STATUS;
@@ -226,6 +241,7 @@ export default function PlanoPage() {
                       <LevelCard
                         key={level.ubicacion}
                         name={level.label}
+                        range={level.range}
                         svgSrc={level.svg}
                         counts={countsFor(level.ubicacion)}
                         activeCategory={
