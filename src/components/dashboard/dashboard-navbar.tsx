@@ -17,6 +17,7 @@ import {
   getSessionUser,
   removeToken,
 } from "@/lib/auth";
+import { getNavLinks } from "@/lib/nav-links";
 
 interface NavLink {
   href: string;
@@ -57,6 +58,16 @@ export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps
     () => (sessionToken ? getSessionUser() : null),
     [sessionToken],
   );
+
+  // Compute nav links from sessionUser.role — safe because sessionToken comes
+  // from useSyncExternalStore (server snapshot = null → BASE_LINKS on SSR,
+  // updates after hydration without mismatch).
+  const computedLinks = useMemo(
+    () => getNavLinks(sessionUser?.role ?? undefined),
+    [sessionUser],
+  );
+  const displayLinks = links ?? computedLinks;
+
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -114,9 +125,9 @@ export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps
         />
         <div className="h-5 w-px bg-subtech-light-blue/50" />
 
-        {links ? (
+        {displayLinks.length > 0 ? (
           <div className="flex items-center gap-1">
-            {links.map((link) => {
+            {displayLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
@@ -138,6 +149,7 @@ export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps
             {title}
           </span>
         )}
+        {/* title prop kept for backwards compat; links are now computed internally */}
       </div>
       <div ref={menuRef} className="relative">
         <button

@@ -136,17 +136,20 @@ export function hasMeaningfulTagChanges(
   return false;
 }
 
-export async function fetchAllMinaTags(): Promise<MinaTag[]> {
-  const all: MinaTag[] = [];
-  let cursor: string | undefined;
-  do {
-    const params = new URLSearchParams({ limit: "100" });
-    if (cursor) params.set("cursor", cursor);
-    const res = await fetchWithAuth<PaginatedResponse>(
-      `/mina-tags?${params.toString()}`,
-    );
-    all.push(...res.items.map(normalizeTag));
-    cursor = res.hasMore ? res.lastEvaluatedKey : undefined;
-  } while (cursor);
-  return all;
+export interface PageResult {
+  tags: MinaTag[];
+  nextCursor: string | undefined;
+}
+
+/** Fetches a single page of mina tags (most recent first). */
+export async function fetchMinaTagsPage(cursor?: string): Promise<PageResult> {
+  const params = new URLSearchParams({ limit: "50" });
+  if (cursor) params.set("cursor", cursor);
+  const res = await fetchWithAuth<PaginatedResponse>(
+    `/mina-tags?${params.toString()}`,
+  );
+  return {
+    tags: res.items.map(normalizeTag),
+    nextCursor: res.hasMore ? res.lastEvaluatedKey : undefined,
+  };
 }

@@ -7,7 +7,6 @@ import { UsersTable, type UserRow } from "@/components/usuarios/users-table";
 import { UserFormModal } from "@/components/usuarios/user-form-modal";
 import { DeleteConfirmModal } from "@/components/usuarios/delete-confirm-modal";
 import { getToken, getTokenPayload } from "@/lib/auth";
-import { getNavLinks } from "@/lib/nav-links";
 import { fetchWithAuth } from "@/lib/api";
 
 export default function UsuariosPage() {
@@ -17,8 +16,6 @@ export default function UsuariosPage() {
   const [error, setError] = useState("");
 
   const payload = useMemo(() => getTokenPayload(), []);
-  const navLinks = useMemo(() => getNavLinks(payload?.role), [payload]);
-
   /* Modal state */
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserRow | null>(null);
@@ -100,7 +97,7 @@ export default function UsuariosPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Usuarios" links={navLinks} />
+      <DashboardNavbar title="Usuarios" />
 
       <main className="relative flex-1 overflow-y-auto p-6">
         {/* Dot pattern bg */}

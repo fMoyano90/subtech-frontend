@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import {
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -15,14 +14,12 @@ import { ExteriorCard } from "@/components/plano/exterior-card";
 import { PlanoSidebar } from "@/components/plano/plano-sidebar";
 import { getToken, getTokenPayload } from "@/lib/auth";
 import { EXTERIOR_MINA_STATUS, isExteriorMinaLocation } from "@/lib/location-status";
-import { getNavLinks } from "@/lib/nav-links";
 import {
   type MinaTag,
   CATEGORIES,
   POLLING_INTERVAL_MS,
   getLatestPerEtiqueta,
-  hasMeaningfulTagChanges,
-  fetchAllMinaTags,
+  fetchMinaTagsPage,
 } from "@/lib/mina-tags";
 
 /* ═══════════════════════════════════════════
@@ -61,9 +58,7 @@ export default function PlanoPage() {
   const [tags, setTags] = useState<MinaTag[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const isRefreshingRef = useRef(false);
-  const navLinks = useMemo(() => getNavLinks(getTokenPayload()?.role), []);
-
+  const isPollingRef = useRef(false);
   /* Image preloading — show skeleton until all maps are loaded */
   const [imagesLoaded, setImagesLoaded] = useState(0);
   const imagesReady = imagesLoaded >= LEVELS.length;
@@ -73,50 +68,50 @@ export default function PlanoPage() {
   const [sidebarLevel, setSidebarLevel] = useState("");
   const [sidebarCategory, setSidebarCategory] = useState("");
 
-  const refreshTags = useCallback(
-    async ({ silent }: { silent: boolean }) => {
-      if (isRefreshingRef.current) return;
-      isRefreshingRef.current = true;
-
-      try {
-        const nextTags = await fetchAllMinaTags();
-        startTransition(() => {
-          setTags((prev) =>
-            hasMeaningfulTagChanges(prev, nextTags) ? nextTags : prev,
-          );
-        });
-        if (!silent) setError("");
-      } catch (e) {
-        if (!silent) {
-          setError(e instanceof Error ? e.message : "Error desconocido");
-        }
-      } finally {
-        if (!silent) setLoading(false);
-        isRefreshingRef.current = false;
-      }
-    },
-    [],
-  );
-
-  /* Auth check + data fetch */
-  useEffect(() => {
-    if (!getToken()) {
-      router.replace("/");
-      return;
+  const loadInitial = useCallback(async () => {
+    try {
+      const result = await fetchMinaTagsPage();
+      setTags(result.tags);
+      setError("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error desconocido");
+    } finally {
+      setLoading(false);
     }
-    void refreshTags({ silent: false });
-  }, [refreshTags, router]);
+  }, []);
+
+  const pollSilently = useCallback(async () => {
+    if (isPollingRef.current) return;
+    isPollingRef.current = true;
+    try {
+      const result = await fetchMinaTagsPage();
+      setTags((prev) => {
+        const existingIds = new Set(prev.map((t) => t.id));
+        const newRecords = result.tags.filter((t) => !existingIds.has(t.id));
+        return newRecords.length > 0 ? [...newRecords, ...prev] : prev;
+      });
+    } catch {
+      // silent
+    } finally {
+      isPollingRef.current = false;
+    }
+  }, []);
+
+  /* Auth check + initial load */
+  useEffect(() => {
+    if (!getToken()) { router.replace("/"); return; }
+    void loadInitial();
+  }, [loadInitial, router]);
 
   /* Silent polling every 30s */
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
+    const id = window.setInterval(() => {
       if (document.visibilityState !== "visible") return;
       if (!getToken()) return;
-      void refreshTags({ silent: true });
+      void pollSilently();
     }, POLLING_INTERVAL_MS);
-
-    return () => window.clearInterval(intervalId);
-  }, [refreshTags]);
+    return () => window.clearInterval(id);
+  }, [pollSilently]);
 
   /* Latest per etiqueta */
   const latest = useMemo(() => getLatestPerEtiqueta(tags), [tags]);
@@ -167,7 +162,7 @@ export default function PlanoPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Plano" links={navLinks} />
+      <DashboardNavbar title="Plano" />
 
       {/* ── Body ── */}
       <div className="flex min-h-0 flex-1 overflow-hidden">

@@ -6,6 +6,7 @@ export interface NavLink {
 const BASE_LINKS: NavLink[] = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/plano", label: "Plano" },
+  { href: "/porticos", label: "Pórticos" },
 ];
 
 const ADMIN_LINKS: NavLink[] = [

@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import {
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -11,11 +10,7 @@ import {
 } from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { getToken, getTokenPayload } from "@/lib/auth";
-import {
-  getLocationPresentation,
-  isInteriorMinaLocation,
-} from "@/lib/location-status";
-import { getNavLinks } from "@/lib/nav-links";
+import { isInteriorMinaLocation } from "@/lib/location-status";
 import {
   type MinaTag,
   CATEGORIES,
@@ -23,8 +18,7 @@ import {
   formatDate,
   formatTime,
   getLatestPerEtiqueta,
-  hasMeaningfulTagChanges,
-  fetchAllMinaTags,
+  fetchMinaTagsPage,
 } from "@/lib/mina-tags";
 
 /* ═══════════════════════════════════════════
@@ -185,14 +179,13 @@ function CategorySection({
                   {subcategoryColumnLabel && (
                     <th className="pb-2 pr-4">{subcategoryColumnLabel}</th>
                   )}
-                  <th className="pb-2 pr-4">Ubicación</th>
+                  <th className="pb-2 pr-4">Último pórtico</th>
                   <th className="pb-2 pr-4">Hora</th>
                   <th className="pb-2">Fecha</th>
                 </tr>
               </thead>
               <tbody>
                 {latest.map((tag) => {
-                  const location = getLocationPresentation(tag.ubicacion);
                   return (
                   <tr
                     key={tag.id}
@@ -206,17 +199,8 @@ function CategorySection({
                         {tag.subcategoria || "Sin dato"}
                       </td>
                     )}
-                    <td className="py-2 pr-4">
-                      <span
-                        className="inline-flex rounded-md border px-2 py-0.5 text-[0.7rem] font-semibold"
-                        style={{
-                          color: location.color,
-                          backgroundColor: location.background,
-                          borderColor: location.border,
-                        }}
-                      >
-                        {location.label}
-                      </span>
+                    <td className="py-2 pr-4 text-subtech-dark-blue/80">
+                      {tag.portico || "—"}
                     </td>
                     <td className="py-2 pr-4 tabular-nums text-subtech-dark-blue/80">
                       {formatTime(tag.timestap)}
@@ -269,54 +253,60 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [filter, setFilter] = useState("");
-  const isRefreshingRef = useRef(false);
-  const navLinks = useMemo(() => getNavLinks(getTokenPayload()?.role), []);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo]     = useState("");
+  const [historyLimit, setHistoryLimit] = useState(50);
+  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const isPollingRef = useRef(false);
 
-  const refreshTags = useCallback(
-    async ({ silent }: { silent: boolean }) => {
-      if (isRefreshingRef.current) return;
-      isRefreshingRef.current = true;
-
-      try {
-        const nextTags = await fetchAllMinaTags();
-        startTransition(() => {
-          setTags((prev) =>
-            hasMeaningfulTagChanges(prev, nextTags) ? nextTags : prev,
-          );
-        });
-        if (!silent) setError("");
-      } catch (e) {
-        if (!silent) {
-          setError(e instanceof Error ? e.message : "Error desconocido");
-        }
-      } finally {
-        if (!silent) setLoading(false);
-        isRefreshingRef.current = false;
-      }
-    },
-    [],
-  );
-
-  /* Auth check + data fetch */
-  useEffect(() => {
-    if (!getToken()) {
-      router.replace("/");
-      return;
+  /* Initial load — page 1 only, show immediately */
+  const loadInitial = useCallback(async () => {
+    try {
+      const result = await fetchMinaTagsPage();
+      setTags(result.tags);
+      setNextCursor(result.nextCursor);
+      setError("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error desconocido");
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    void refreshTags({ silent: false });
-  }, [refreshTags, router]);
+  /* Silent poll — fetch page 1, prepend any new records */
+  const pollSilently = useCallback(async () => {
+    if (isPollingRef.current) return;
+    isPollingRef.current = true;
+    try {
+      const result = await fetchMinaTagsPage();
+      setTags((prev) => {
+        const existingIds = new Set(prev.map((t) => t.id));
+        const newRecords = result.tags.filter((t) => !existingIds.has(t.id));
+        return newRecords.length > 0 ? [...newRecords, ...prev] : prev;
+      });
+    } catch {
+      // silent
+    } finally {
+      isPollingRef.current = false;
+    }
+  }, []);
+
+  /* Auth check + initial load */
+  useEffect(() => {
+    if (!getToken()) { router.replace("/"); return; }
+    void loadInitial();
+  }, [loadInitial, router]);
 
   /* Silent polling every 30s */
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
+    const id = window.setInterval(() => {
       if (document.visibilityState !== "visible") return;
       if (!getToken()) return;
-      void refreshTags({ silent: true });
+      void pollSilently();
     }, POLLING_INTERVAL_MS);
-
-    return () => window.clearInterval(intervalId);
-  }, [refreshTags]);
+    return () => window.clearInterval(id);
+  }, [pollSilently]);
 
   /* Group by category */
   const grouped = useMemo(() => {
@@ -329,19 +319,49 @@ export default function DashboardPage() {
     return m;
   }, [tags]);
 
+  /* Reset visible limit when filters change */
+  useEffect(() => setHistoryLimit(50), [filter, dateFrom, dateTo]);
+
+  /* Load more: extend visible window, or fetch next API page when exhausted */
+  async function handleHistoryLoadMore() {
+    if (historyLimit < history.length) {
+      setHistoryLimit((l) => l + 50);
+      return;
+    }
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const result = await fetchMinaTagsPage(nextCursor);
+      setTags((prev) => [...prev, ...result.tags]);
+      setNextCursor(result.nextCursor);
+      setHistoryLimit((l) => l + 50);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
   /* History: all records, sorted, filtered */
   const history = useMemo(() => {
     const sorted = [...tags].sort((a, b) => b.timestap - a.timestap);
-    if (!filter.trim()) return sorted;
-    const q = filter.toLowerCase();
-    return sorted.filter((t) =>
-      t.etiqueta.toLowerCase().includes(q),
-    );
-  }, [tags, filter]);
+    const q = filter.trim().toLowerCase();
+    return sorted.filter((t) => {
+      if (q && !t.etiqueta.toLowerCase().includes(q)) return false;
+      if (dateFrom || dateTo) {
+        const iso = new Date(t.timestap * 1000).toISOString().slice(0, 10);
+        if (dateFrom && iso < dateFrom) return false;
+        if (dateTo   && iso > dateTo)   return false;
+      }
+      return true;
+    });
+  }, [tags, filter, dateFrom, dateTo]);
+
+  const hasDateFilter = dateFrom !== "" || dateTo !== "";
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Dashboard" links={navLinks} />
+      <DashboardNavbar title="Dashboard" />
 
       {/* ── Body ── */}
       <div className="flex min-h-0 flex-1">
@@ -502,13 +522,55 @@ export default function DashboardPage() {
                   </button>
                 )}
               </div>
+              {/* Date filter */}
+              <div
+                className="mt-2 flex items-center gap-2"
+                style={{ fontFamily: "var(--font-dm-sans)" }}
+              >
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <label className="text-[0.6rem] font-bold uppercase tracking-wider text-subtech-dark-blue/50">
+                    Desde
+                  </label>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="h-8 w-full rounded-lg border border-subtech-light-blue/50 bg-subtech-ice/40 px-2 text-[0.75rem] text-subtech-dark-blue transition-colors focus:border-subtech-dark-blue focus:outline-none"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <label className="text-[0.6rem] font-bold uppercase tracking-wider text-subtech-dark-blue/50">
+                    Hasta
+                  </label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="h-8 w-full rounded-lg border border-subtech-light-blue/50 bg-subtech-ice/40 px-2 text-[0.75rem] text-subtech-dark-blue transition-colors focus:border-subtech-dark-blue focus:outline-none"
+                  />
+                </div>
+                {hasDateFilter && (
+                  <button
+                    onClick={() => { setDateFrom(""); setDateTo(""); }}
+                    title="Limpiar fechas"
+                    className="mt-4 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-subtech-light-blue/50 text-subtech-dark-blue/50 transition-colors hover:border-subtech-dark-blue/40 hover:text-subtech-dark-blue"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
               {/* Result count */}
               <p
                 className="mt-2 text-[0.68rem] text-subtech-dark-blue/60"
                 style={{ fontFamily: "var(--font-dm-sans)" }}
               >
                 {history.length} registro{history.length !== 1 && "s"}
-                {filter && " encontrado" + (history.length !== 1 ? "s" : "")}
+                {(filter || hasDateFilter) && ` (de ${tags.length} totales)`}
               </p>
             </div>
 
@@ -523,7 +585,7 @@ export default function DashboardPage() {
                     <th className="pb-1.5 pr-2">Nombre</th>
                     <th className="pb-1.5 pr-2">Fecha</th>
                     <th className="pb-1.5 pr-2">Hora</th>
-                    <th className="pb-1.5">Ubicación</th>
+                    <th className="pb-1.5">Último pórtico</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -537,9 +599,7 @@ export default function DashboardPage() {
                       </td>
                     </tr>
                   ) : (
-                    history.map((tag) => {
-                      const location = getLocationPresentation(tag.ubicacion);
-                      return (
+                    history.slice(0, historyLimit).map((tag) => (
                       <tr
                         key={tag.id}
                         className="border-b border-subtech-ice/60 transition-colors hover:bg-subtech-ice/40"
@@ -553,20 +613,30 @@ export default function DashboardPage() {
                         <td className="py-1.5 pr-2 tabular-nums text-subtech-dark-blue/75">
                           {formatTime(tag.timestap)}
                         </td>
-                        <td className="py-1.5">
-                          <span
-                            className="text-[0.65rem] font-medium"
-                            style={{ color: location.color }}
-                          >
-                            {location.label}
-                          </span>
+                        <td className="py-1.5 text-[0.65rem] font-medium text-subtech-dark-blue/75">
+                          {tag.portico || "—"}
                         </td>
                       </tr>
-                      );
-                    })
+                    ))
                   )}
                 </tbody>
               </table>
+
+              {/* Load more */}
+              {(historyLimit < history.length || nextCursor) && (
+                <button
+                  onClick={() => void handleHistoryLoadMore()}
+                  disabled={loadingMore}
+                  className="mt-3 w-full rounded-lg border border-subtech-light-blue/40 py-2 text-[0.72rem] font-medium text-subtech-dark-blue/70 transition-colors hover:border-subtech-dark-blue/30 hover:text-subtech-dark-blue disabled:opacity-50"
+                  style={{ fontFamily: "var(--font-dm-sans)" }}
+                >
+                  {loadingMore
+                    ? "Cargando..."
+                    : historyLimit < history.length
+                    ? `Ver más (${history.length - historyLimit} cargados)`
+                    : "Cargar datos anteriores"}
+                </button>
+              )}
             </div>
           </div>
 

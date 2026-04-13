@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { getSessionUser, getToken, getTokenPayload } from "@/lib/auth";
-import { getNavLinks } from "@/lib/nav-links";
 import { getMyProfile, updateMyProfile, type ProfileUser } from "@/lib/profile";
 
 interface FormStatus {
@@ -20,8 +19,6 @@ function roleLabel(role?: "admin" | "user"): string {
 export default function PerfilPage() {
   const router = useRouter();
   const payload = useMemo(() => getTokenPayload(), []);
-  const navLinks = useMemo(() => getNavLinks(payload?.role), [payload]);
-
   const [sessionUser, setSessionUser] = useState(() => getSessionUser());
   const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -154,7 +151,7 @@ export default function PerfilPage() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-subtech-ice">
-      <DashboardNavbar title="Perfil" links={navLinks} />
+      <DashboardNavbar title="Perfil" />
 
       <main className="relative flex-1 overflow-y-auto p-6">
         <div
