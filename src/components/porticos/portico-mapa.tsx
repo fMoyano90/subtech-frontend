@@ -136,58 +136,49 @@ export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) 
           style={{ maxHeight: 430 }}
           aria-label="Diagrama de pórticos de la mina"
         >
-          {/* ── Mountain silhouette ── */}
+          {/* ── Mountain (cerro) silhouette ── */}
           {/*
-            Design goal: asymmetric mountain profile like a real mine hill
-            (as in the reference photo — steep left slope, visible pointed peak,
-            more gradual right descent).
+            Triangular asymmetric cerro: steep left face, longer right slope.
+            Straight-line slopes (L) give the hard mountain silhouette.
 
-            Coverage guarantees:
-              P-left ( 18–152, 290–376) → left cliff at x=−10 covers it
-              P-ctr  (266–362, 182–266) → well inside left slope
-              P-top  (460–568,  70–164) → below peak (y=25), inside slopes
-              P-BR   (798–898, 400–492) → right base reaches x=910
+            Node coverage:
+              P-left ( 18–152, 290–376) → inside left wall
+              P-ctr  (266–362, 182–266) → left slope at x=314 ≈ y=78, node y=182 ✓
+              P-top  (460–568,  70–164) → peak y=6, node y=70 ✓
+              P-BR   (798–898, 400–492) → right base at x=848 ≈ y=270, inside body ✓
           */}
 
-          {/* Outer mountain — light blue fill + hairline border */}
+          {/* Inner shading — rock depth */}
           <path
             d={
-              /* left cliff: nearly vertical up to y=270 */
-              "M -10 520 L -10 270" +
-              /* cliff curves into a straight left slope */
-              " C -10 200 45 155 90 125" +
-              /* straight left slope up to near-peak */
-              " L 430 32" +
-              /* gentle rounded peak visible at y=25 */
-              " Q 475 18 515 25" +
-              /* right-of-peak drops more steeply first … */
-              " Q 558 18 585 60" +
-              /* … then a long straight right slope (more gradual angle) */
-              " L 825 258" +
-              /* right-base curve down to corner */
-              " Q 900 350 910 450" +
-              /* base */
+              "M -10 520 L -10 378" +
+              " L 82 252" +                 // straight inner left slope
+              " L 462 98 Q 490 88 520 98" + // inner peak plateau
+              " L 848 278 Q 900 342 910 462" +
               " L 910 520 Z"
             }
-            fill="rgba(111,176,226,0.10)"
-            stroke="rgba(38,82,145,0.14)"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
+            fill="rgba(118,82,28,0.13)"
           />
 
-          {/* Inner rock layer — gives cross-section depth */}
+          {/* Outer cerro — straight slopes, pointed asymmetric peak */}
           <path
             d={
-              "M -10 520 L -10 330" +
-              " C -10 265 50 215 95 185" +
-              " L 430 95" +
-              " Q 475 80 515 90" +
-              " Q 558 80 584 118" +
-              " L 822 312" +
-              " Q 900 400 910 475" +
+              /* left base + straight steep left face */
+              "M -10 520 L -10 302 L 82 168" +
+              /* straight left slope up to peak */
+              " L 462 6" +
+              /* PEAK — short rounded tip */
+              " Q 488 -5 516 8" +
+              /* straight right slope — more gradual angle */
+              " L 848 256" +
+              /* right base curve down to ground */
+              " Q 900 328 910 430" +
               " L 910 520 Z"
             }
-            fill="rgba(38,82,145,0.055)"
+            fill="rgba(168,124,62,0.22)"
+            stroke="rgba(128,84,28,0.34)"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
           />
 
           {/* ── Tunnel paths ── */}
@@ -196,7 +187,7 @@ export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) 
               key={i}
               d={d}
               fill="none"
-              stroke="#C8DDF2"
+              stroke="#D6C3A8"
               strokeWidth="10"
               strokeLinecap="round"
               strokeLinejoin="round"

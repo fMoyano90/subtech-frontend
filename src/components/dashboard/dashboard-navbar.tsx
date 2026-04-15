@@ -115,14 +115,16 @@ export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps
   return (
     <nav className="z-30 flex h-[4.5rem] shrink-0 items-center justify-between border-b border-[#265291]/10 bg-white px-5 shadow-[0_1px_4px_rgba(38,82,145,0.06)]">
       <div className="flex items-center gap-5">
-        <Image
-          src="/SS_LOGO_COLOR_H.png"
-          alt="Subtech"
-          width={130}
-          height={38}
-          priority
-          className="shrink-0"
-        />
+        <Link href="/dashboard">
+          <Image
+            src="/SS_LOGO_COLOR_H.png"
+            alt="Subtech"
+            width={130}
+            height={38}
+            priority
+            className="shrink-0"
+          />
+        </Link>
         <div className="h-5 w-px bg-subtech-light-blue/50" />
 
         {displayLinks.length > 0 ? (
