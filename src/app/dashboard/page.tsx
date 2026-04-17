@@ -17,7 +17,8 @@ import {
   POLLING_INTERVAL_MS,
   formatDate,
   formatTime,
-  getLatestPerEtiqueta,
+  hasMeaningfulTagChanges,
+  fetchLatestMinaTags,
   fetchMinaTagsPage,
 } from "@/lib/mina-tags";
 
@@ -142,8 +143,7 @@ function CategorySection({
   accent: string;
   tags: MinaTag[];
 }) {
-  const latest = useMemo(() => getLatestPerEtiqueta(tags), [tags]);
-  const interiorCount = latest.filter(isInterior).length;
+  const interiorCount = tags.filter(isInterior).length;
   const subcategoryColumnLabel = getSubcategoryColumnLabel(categoryKey);
 
   return (
@@ -161,7 +161,7 @@ function CategorySection({
       <div className="flex items-stretch">
         {/* Table */}
         <div className="min-w-0 flex-1 overflow-x-auto px-5 py-4">
-          {latest.length === 0 ? (
+          {tags.length === 0 ? (
             <p
               className="py-6 text-center text-sm text-subtech-dark-blue/60"
               style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -185,7 +185,7 @@ function CategorySection({
                 </tr>
               </thead>
               <tbody>
-                {latest.map((tag) => {
+                {tags.map((tag) => {
                   return (
                   <tr
                     key={tag.id}
@@ -217,13 +217,13 @@ function CategorySection({
         </div>
 
         {/* Chart + interior count */}
-        {latest.length > 0 && (
+        {tags.length > 0 && (
           <div className="flex shrink-0 items-center gap-5 border-l border-subtech-ice px-6">
             <div className="flex flex-col items-center gap-1">
               <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-subtech-dark-blue/65">
                 Relación A/F
               </span>
-              <DonutChart interior={interiorCount} total={latest.length} />
+              <DonutChart interior={interiorCount} total={tags.length} />
             </div>
             <div className="flex flex-col items-center text-center">
               <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] leading-tight text-subtech-dark-blue/65">
@@ -248,7 +248,14 @@ function CategorySection({
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [tags, setTags] = useState<MinaTag[]>([]);
+
+  /* "Última Información Registrada" — one record per entity, from /mina-tags/latest */
+  const [latestTags, setLatestTags] = useState<MinaTag[]>([]);
+
+  /* "Registros Históricos" — paginated full history, from /mina-tags */
+  const [historyTags, setHistoryTags] = useState<MinaTag[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -256,16 +263,19 @@ export default function DashboardPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo]     = useState("");
   const [historyLimit, setHistoryLimit] = useState(50);
-  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
   const [loadingMore, setLoadingMore] = useState(false);
   const isPollingRef = useRef(false);
 
-  /* Initial load — page 1 only, show immediately */
+  /* Initial load — both endpoints in parallel */
   const loadInitial = useCallback(async () => {
     try {
-      const result = await fetchMinaTagsPage();
-      setTags(result.tags);
-      setNextCursor(result.nextCursor);
+      const [latest, page] = await Promise.all([
+        fetchLatestMinaTags(),
+        fetchMinaTagsPage(),
+      ]);
+      setLatestTags(latest);
+      setHistoryTags(page.tags);
+      setNextCursor(page.nextCursor);
       setError("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error desconocido");
@@ -274,15 +284,21 @@ export default function DashboardPage() {
     }
   }, []);
 
-  /* Silent poll — fetch page 1, prepend any new records */
+  /* Silent poll — refresh both endpoints in parallel */
   const pollSilently = useCallback(async () => {
     if (isPollingRef.current) return;
     isPollingRef.current = true;
     try {
-      const result = await fetchMinaTagsPage();
-      setTags((prev) => {
+      const [latest, page] = await Promise.all([
+        fetchLatestMinaTags(),
+        fetchMinaTagsPage(),
+      ]);
+      setLatestTags((prev) =>
+        hasMeaningfulTagChanges(prev, latest) ? latest : prev,
+      );
+      setHistoryTags((prev) => {
         const existingIds = new Set(prev.map((t) => t.id));
-        const newRecords = result.tags.filter((t) => !existingIds.has(t.id));
+        const newRecords = page.tags.filter((t) => !existingIds.has(t.id));
         return newRecords.length > 0 ? [...newRecords, ...prev] : prev;
       });
     } catch {
@@ -308,19 +324,34 @@ export default function DashboardPage() {
     return () => window.clearInterval(id);
   }, [pollSilently]);
 
-  /* Group by category */
+  /* Group latest tags by category */
   const grouped = useMemo(() => {
     const m = new Map<string, MinaTag[]>();
     for (const c of CATEGORIES) m.set(c.key, []);
-    for (const t of tags) {
+    for (const t of latestTags) {
       const arr = m.get(t.categoria);
       if (arr) arr.push(t);
     }
     return m;
-  }, [tags]);
+  }, [latestTags]);
 
   /* Reset visible limit when filters change */
   useEffect(() => setHistoryLimit(50), [filter, dateFrom, dateTo]);
+
+  /* History: all records, sorted, filtered */
+  const history = useMemo(() => {
+    const sorted = [...historyTags].sort((a, b) => b.timestap - a.timestap);
+    const q = filter.trim().toLowerCase();
+    return sorted.filter((t) => {
+      if (q && !t.etiqueta.toLowerCase().includes(q)) return false;
+      if (dateFrom || dateTo) {
+        const iso = new Date(t.timestap * 1000).toISOString().slice(0, 10);
+        if (dateFrom && iso < dateFrom) return false;
+        if (dateTo   && iso > dateTo)   return false;
+      }
+      return true;
+    });
+  }, [historyTags, filter, dateFrom, dateTo]);
 
   /* Load more: extend visible window, or fetch next API page when exhausted */
   async function handleHistoryLoadMore() {
@@ -332,7 +363,7 @@ export default function DashboardPage() {
     setLoadingMore(true);
     try {
       const result = await fetchMinaTagsPage(nextCursor);
-      setTags((prev) => [...prev, ...result.tags]);
+      setHistoryTags((prev) => [...prev, ...result.tags]);
       setNextCursor(result.nextCursor);
       setHistoryLimit((l) => l + 50);
     } catch {
@@ -341,21 +372,6 @@ export default function DashboardPage() {
       setLoadingMore(false);
     }
   }
-
-  /* History: all records, sorted, filtered */
-  const history = useMemo(() => {
-    const sorted = [...tags].sort((a, b) => b.timestap - a.timestap);
-    const q = filter.trim().toLowerCase();
-    return sorted.filter((t) => {
-      if (q && !t.etiqueta.toLowerCase().includes(q)) return false;
-      if (dateFrom || dateTo) {
-        const iso = new Date(t.timestap * 1000).toISOString().slice(0, 10);
-        if (dateFrom && iso < dateFrom) return false;
-        if (dateTo   && iso > dateTo)   return false;
-      }
-      return true;
-    });
-  }, [tags, filter, dateFrom, dateTo]);
 
   const hasDateFilter = dateFrom !== "" || dateTo !== "";
 
@@ -570,7 +586,7 @@ export default function DashboardPage() {
                 style={{ fontFamily: "var(--font-dm-sans)" }}
               >
                 {history.length} registro{history.length !== 1 && "s"}
-                {(filter || hasDateFilter) && ` (de ${tags.length} totales)`}
+                {(filter || hasDateFilter) && ` (de ${historyTags.length} totales)`}
               </p>
             </div>
 

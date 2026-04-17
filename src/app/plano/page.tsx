@@ -18,8 +18,8 @@ import {
   type MinaTag,
   CATEGORIES,
   POLLING_INTERVAL_MS,
-  getLatestPerEtiqueta,
-  fetchMinaTagsPage,
+  hasMeaningfulTagChanges,
+  fetchLatestMinaTags,
 } from "@/lib/mina-tags";
 
 /* ═══════════════════════════════════════════
@@ -70,8 +70,8 @@ export default function PlanoPage() {
 
   const loadInitial = useCallback(async () => {
     try {
-      const result = await fetchMinaTagsPage();
-      setTags(result.tags);
+      const latest = await fetchLatestMinaTags();
+      setTags(latest);
       setError("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error desconocido");
@@ -84,12 +84,10 @@ export default function PlanoPage() {
     if (isPollingRef.current) return;
     isPollingRef.current = true;
     try {
-      const result = await fetchMinaTagsPage();
-      setTags((prev) => {
-        const existingIds = new Set(prev.map((t) => t.id));
-        const newRecords = result.tags.filter((t) => !existingIds.has(t.id));
-        return newRecords.length > 0 ? [...newRecords, ...prev] : prev;
-      });
+      const latest = await fetchLatestMinaTags();
+      setTags((prev) =>
+        hasMeaningfulTagChanges(prev, latest) ? latest : prev,
+      );
     } catch {
       // silent
     } finally {
@@ -113,13 +111,10 @@ export default function PlanoPage() {
     return () => window.clearInterval(id);
   }, [pollSilently]);
 
-  /* Latest per etiqueta */
-  const latest = useMemo(() => getLatestPerEtiqueta(tags), [tags]);
-
   /* Group by ubicacion */
   const byUbicacion = useMemo(() => {
     const m = new Map<string, MinaTag[]>();
-    for (const tag of latest) {
+    for (const tag of tags) {
       const rawLocation = String(tag.ubicacion ?? "").trim();
       const key = isExteriorMinaLocation(rawLocation)
         ? EXTERIOR_KEY
@@ -129,7 +124,7 @@ export default function PlanoPage() {
       else m.set(key, [tag]);
     }
     return m;
-  }, [latest]);
+  }, [tags]);
 
   /* Count by category for a given ubicacion */
   function countsFor(ubicacion: string): Record<string, number> {

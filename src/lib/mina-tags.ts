@@ -91,7 +91,7 @@ export function formatTime(ts: number): string {
 export function normalizeTag(raw: MinaTagRaw): MinaTag {
   return {
     ...raw,
-    id: raw.id ?? `${raw.UID ?? ""}-${raw.timestap}`,
+    id: raw.id ?? `${raw.Etiqueta ?? raw.etiqueta ?? raw.UID ?? "unknown"}-${raw.timestap}`,
     uid: raw.UID ?? "",
     timestap: raw.timestap,
     categoria: raw.Categoria ?? raw.categoria ?? "",
@@ -100,17 +100,6 @@ export function normalizeTag(raw: MinaTagRaw): MinaTag {
     subcategoria: raw.Subcategoria ?? raw.subcategoria ?? "",
     portico: raw.Portico ?? raw.portico ?? "",
   };
-}
-
-export function getLatestPerEtiqueta(tags: MinaTag[]): MinaTag[] {
-  const map = new Map<string, MinaTag>();
-  for (const tag of tags) {
-    const existing = map.get(tag.etiqueta);
-    if (!existing || tag.timestap > existing.timestap) {
-      map.set(tag.etiqueta, tag);
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => b.timestap - a.timestap);
 }
 
 export function hasMeaningfulTagChanges(
@@ -139,6 +128,14 @@ export function hasMeaningfulTagChanges(
 export interface PageResult {
   tags: MinaTag[];
   nextCursor: string | undefined;
+}
+
+/** Fetches the latest record per unique etiqueta (current mine state). */
+export async function fetchLatestMinaTags(): Promise<MinaTag[]> {
+  const res = await fetchWithAuth<{ items: MinaTagRaw[]; count: number }>(
+    '/mina-tags/latest',
+  );
+  return res.items.map(normalizeTag);
 }
 
 /** Fetches a single page of mina tags (most recent first). */
