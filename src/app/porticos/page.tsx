@@ -11,9 +11,11 @@ import {
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { PorticoMapa } from "@/components/porticos/portico-mapa";
 import { PorticoSidebar } from "@/components/porticos/portico-sidebar";
+import { RecorridoModal } from "@/components/porticos/recorrido-modal";
 import { getToken, getTokenPayload } from "@/lib/auth";
 import {
   type MinaTag,
+  type RecorridoResponse,
   POLLING_INTERVAL_MS,
   fetchMinaTagsPage,
 } from "@/lib/mina-tags";
@@ -24,6 +26,8 @@ export default function PorticosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
+  const [recorrido, setRecorrido] = useState<RecorridoResponse | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
   const [loadingMore, setLoadingMore] = useState(false);
   const isPollingRef = useRef(false);
@@ -78,15 +82,16 @@ export default function PorticosPage() {
     void loadInitial();
   }, [loadInitial, router]);
 
-  /* Silent polling every 30s */
+  /* Silent polling every 30s — paused while a recorrido is displayed */
   useEffect(() => {
     const id = window.setInterval(() => {
+      if (recorrido) return;
       if (document.visibilityState !== "visible") return;
       if (!getToken()) return;
       void pollSilently();
     }, POLLING_INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [pollSilently]);
+  }, [pollSilently, recorrido]);
 
   /* ── Derived data ── */
 
@@ -160,17 +165,46 @@ export default function PorticosPage() {
             ) : (
               <>
                 {/* Page header */}
-                <div className="mb-5">
-                  <h1 className="text-lg font-bold tracking-tight text-subtech-dark-blue">
-                    Plano Simplificado de Pórticos
-                  </h1>
-                  <p
-                    className="mt-0.5 text-[0.82rem] text-subtech-dark-blue/85"
+                <div className="mb-5 flex items-start justify-between gap-3">
+                  <div>
+                    <h1 className="text-lg font-bold tracking-tight text-subtech-dark-blue">
+                      Plano Simplificado de Pórticos
+                    </h1>
+                    <p
+                      className="mt-0.5 text-[0.82rem] text-subtech-dark-blue/85"
+                      style={{ fontFamily: "var(--font-dm-sans)" }}
+                    >
+                      Diagrama esquemático de la faena con detección en tiempo real
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setModalOpen(true)}
+                    className="shrink-0 rounded-lg bg-subtech-dark-blue px-3 py-2 text-[0.78rem] font-semibold text-white transition-opacity hover:opacity-85"
                     style={{ fontFamily: "var(--font-dm-sans)" }}
                   >
-                    Diagrama esquemático de la faena con detección en tiempo real
-                  </p>
+                    Ver recorrido
+                  </button>
                 </div>
+
+                {/* Recorrido active chip */}
+                {recorrido && (
+                  <div
+                    className="mb-4 flex items-center gap-3 rounded-xl border border-[#D4A700]/40 bg-[#FFF9E6] px-4 py-2.5"
+                    style={{ fontFamily: "var(--font-dm-sans)" }}
+                  >
+                    <span className="flex-1 text-[0.78rem] font-semibold text-subtech-dark-blue">
+                      Recorrido: <span className="font-bold">{recorrido.etiqueta}</span>
+                      {" · "}{recorrido.date}
+                      {" · "}{recorrido.count} {recorrido.count === 1 ? "paso" : "pasos"}
+                    </span>
+                    <button
+                      onClick={() => setRecorrido(null)}
+                      className="text-[0.72rem] font-semibold text-subtech-dark-blue/60 hover:text-subtech-dark-blue"
+                    >
+                      Limpiar
+                    </button>
+                  </div>
+                )}
 
                 {/* Stats strip */}
                 <div
@@ -191,6 +225,7 @@ export default function PorticosPage() {
                     porticos={porticoNodes}
                     selected={selected}
                     onSelect={setSelected}
+                    recorrido={recorrido?.steps ?? null}
                   />
                 </div>
               </>
@@ -207,6 +242,12 @@ export default function PorticosPage() {
           onLoadMore={() => void handleLoadMore()}
         />
       </div>
+
+      <RecorridoModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onResult={(r) => setRecorrido(r)}
+      />
     </div>
   );
 }

@@ -138,6 +138,44 @@ export async function fetchLatestMinaTags(): Promise<MinaTag[]> {
   return res.items.map(normalizeTag);
 }
 
+/* ═══════════════════════════════════════════
+   Recorrido types & fetchers
+   ═══════════════════════════════════════════ */
+
+export interface RecorridoStep {
+  sequence: number;
+  portico: string;
+  timestap: number;
+  ubicacion: string;
+}
+
+export interface RecorridoResponse {
+  etiqueta: string;
+  date: string;
+  count: number;
+  steps: RecorridoStep[];
+}
+
+export interface EtiquetaOption {
+  etiqueta: string;
+  categoria: string;
+}
+
+export async function fetchEtiquetas(): Promise<EtiquetaOption[]> {
+  const res = await fetchWithAuth<{ items: EtiquetaOption[]; count: number }>(
+    '/mina-tags/etiquetas',
+  );
+  return res.items;
+}
+
+export async function fetchRecorrido(
+  etiqueta: string,
+  date: string,
+): Promise<RecorridoResponse> {
+  const params = new URLSearchParams({ etiqueta, date });
+  return fetchWithAuth<RecorridoResponse>(`/mina-tags/recorrido?${params.toString()}`);
+}
+
 /** Fetches a single page of mina tags (most recent first). */
 export async function fetchMinaTagsPage(cursor?: string): Promise<PageResult> {
   const params = new URLSearchParams({ limit: "50" });

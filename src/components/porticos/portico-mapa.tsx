@@ -4,6 +4,8 @@
    PorticoMapa — SVG simplified mine diagram with 4 nodes
    ═══════════════════════════════════════════════════════ */
 
+import type { RecorridoStep } from "@/lib/mina-tags";
+
 export interface PorticoData {
   portico: string;
   currentCount: number; // tags currently at this portico (latest per etiqueta)
@@ -14,6 +16,7 @@ interface PorticoMapaProps {
   porticos: PorticoData[];
   selected: string | null;
   onSelect: (portico: string | null) => void;
+  recorrido?: RecorridoStep[] | null;
 }
 
 /* ──────────────────────────────────────────────────────
@@ -104,13 +107,26 @@ function splitLabel(text: string): [string, string] {
 
 /* ══════════════════════════════════════════════════════ */
 
-export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) {
+export function PorticoMapa({ porticos, selected, onSelect, recorrido }: PorticoMapaProps) {
+  // Build per-node sequence lists using the same PORTICO_MAP keywords
+  // seqByNodeIndex[i] = array of sequence numbers for node at POSITIONS[i]
+  const seqByNodeIndex: (number[] | null)[] = PORTICO_MAP.map(({ keyword }) => {
+    if (!recorrido) return null;
+    const seqs: number[] = [];
+    for (const step of recorrido) {
+      if (step.portico.toLowerCase().includes(keyword)) {
+        seqs.push(step.sequence);
+      }
+    }
+    return seqs.length > 0 ? seqs : null;
+  });
+
   // Match each position to its pórtico via keyword (case-insensitive substring)
   const nodes = POSITIONS.map((pos, i) => {
     const { keyword, short, fallback } = PORTICO_MAP[i];
     const data =
       porticos.find((p) => p.portico.toLowerCase().includes(keyword)) ?? null;
-    return { pos, data, short, fallback };
+    return { pos, data, short, fallback, nodeIndex: i };
   });
 
   return (
@@ -195,19 +211,39 @@ export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) 
           ))}
 
           {/* ── Nodes ── */}
-          {nodes.map(({ pos, data, short, fallback }) => {
+          {nodes.map(({ pos, data, short, fallback, nodeIndex }) => {
             const ncx = cx(pos);
             const ncy = cy(pos);
             const isActive = !!data && selected === data.portico;
             const empty = !data;
 
-            const fillColor   = empty ? "#F4F7FC" : isActive ? "#265291" : "#FFFFFF";
-            const strokeColor = empty ? "#C8DDF2" : isActive ? "#265291" : "#265291";
-            const strokeW     = empty ? 1.5 : 2;
+            const nodeSeq = seqByNodeIndex[nodeIndex] ?? null;
+            const inRecorrido = !!nodeSeq && nodeSeq.length > 0;
+
+            const fillColor   = empty ? "#F4F7FC" : inRecorrido ? "#D4A700" : isActive ? "#265291" : "#FFFFFF";
+            const strokeColor = empty ? "#C8DDF2" : inRecorrido ? "#B8900A" : isActive ? "#265291" : "#265291";
+            const strokeW     = empty ? 1.5 : inRecorrido ? 2.5 : 2;
             const dash        = empty ? "5 4" : undefined;
 
-            const countColor  = isActive ? "#FFFFFF" : empty ? "rgba(38,82,145,0.30)" : "#265291";
-            const labelColor  = isActive ? "rgba(255,255,255,0.80)" : empty ? "rgba(38,82,145,0.30)" : "rgba(38,82,145,0.65)";
+            const countColor  = inRecorrido ? "#FFFFFF" : isActive ? "#FFFFFF" : empty ? "rgba(38,82,145,0.30)" : "#265291";
+            const labelColor  = inRecorrido ? "rgba(255,255,255,0.85)" : isActive ? "rgba(255,255,255,0.80)" : empty ? "rgba(38,82,145,0.30)" : "rgba(38,82,145,0.65)";
+
+            // Split sequence into up to 2 rows of 4, plus "+N" overflow
+            const SEQ_PER_ROW = 4;
+            const MAX_ROWS = 2;
+            const seqRows: string[] = [];
+            let seqOverflow = 0;
+            if (nodeSeq) {
+              const maxShown = SEQ_PER_ROW * MAX_ROWS;
+              const shown = nodeSeq.slice(0, maxShown);
+              seqOverflow = nodeSeq.length - shown.length;
+              for (let r = 0; r < MAX_ROWS; r++) {
+                const chunk = shown.slice(r * SEQ_PER_ROW, (r + 1) * SEQ_PER_ROW);
+                if (chunk.length > 0) seqRows.push(chunk.join(", "));
+              }
+              if (seqOverflow > 0) seqRows[seqRows.length - 1] += ` +${seqOverflow}`;
+            }
+            const seqFontSize = 13;
 
             const [line1, line2] = splitLabel(data ? data.portico : fallback);
             const twoLines = line2 !== "";
@@ -224,6 +260,11 @@ export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) 
                 role={data ? "button" : undefined}
                 aria-label={data ? `Pórtico ${data.portico}` : undefined}
               >
+                {/* Tooltip: full sequence on hover */}
+                {inRecorrido && nodeSeq && (
+                  <title>{`Pasos por este pórtico: ${nodeSeq.join(", ")}`}</title>
+                )}
+
                 {/* Drop shadow */}
                 {!empty && (
                   <rect
@@ -249,20 +290,42 @@ export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) 
                   strokeDasharray={dash}
                 />
 
-                {/* Content: count + 1-or-2 line label (always shown) */}
+                {/* Content: count (or sequence rows) + label */}
                 <>
-                  <text
-                    x={ncx}
-                    y={twoLines ? ncy - 16 : ncy - 5}
-                    textAnchor="middle"
-                    dominantBaseline="auto"
-                    fontSize="24"
-                    fontWeight="700"
-                    fill={countColor}
-                    style={{ fontFamily: "var(--font-geist-sans, system-ui)" }}
-                  >
-                    {displayCount}
-                  </text>
+                  {inRecorrido ? (
+                    /* Multi-row sequence display */
+                    <text
+                      textAnchor="middle"
+                      fontWeight="700"
+                      fill={countColor}
+                      fontSize={seqFontSize}
+                      style={{ fontFamily: "var(--font-geist-sans, system-ui)" }}
+                    >
+                      {seqRows.map((row, ri) => {
+                        const totalRows = seqRows.length;
+                        const blockH = totalRows * (seqFontSize + 2);
+                        const startY = ncy - blockH / 2 - 8 + ri * (seqFontSize + 2) + seqFontSize;
+                        return (
+                          <tspan key={ri} x={ncx} y={startY}>
+                            {row}
+                          </tspan>
+                        );
+                      })}
+                    </text>
+                  ) : (
+                    <text
+                      x={ncx}
+                      y={twoLines ? ncy - 16 : ncy - 5}
+                      textAnchor="middle"
+                      dominantBaseline="auto"
+                      fontSize={24}
+                      fontWeight="700"
+                      fill={countColor}
+                      style={{ fontFamily: "var(--font-geist-sans, system-ui)" }}
+                    >
+                      {displayCount}
+                    </text>
+                  )}
                   <text
                     x={ncx}
                     y={twoLines ? ncy + 5 : ncy + 16}
@@ -322,8 +385,12 @@ export function PorticoMapa({ porticos, selected, onSelect }: PorticoMapaProps) 
           <span className="inline-block h-2.5 w-2.5 rounded-sm border-2 border-subtech-dark-blue bg-white" />
           Sin selección
         </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[#D4A700]" />
+          Pórtico visitado (recorrido)
+        </span>
         <span>
-          El número indica personas / maquinaria únicas detectadas en este pórtico
+          Sin recorrido: conteo de entidades únicas. Con recorrido: secuencia de pasos.
         </span>
       </div>
     </div>
