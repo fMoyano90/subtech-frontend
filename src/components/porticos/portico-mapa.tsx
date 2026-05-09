@@ -211,7 +211,7 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
           ))}
 
           {/* ── Nodes ── */}
-          {nodes.map(({ pos, data, short, fallback, nodeIndex }) => {
+          {nodes.map(({ pos, data, fallback, nodeIndex }) => {
             const ncx = cx(pos);
             const ncy = cy(pos);
             const isActive = !!data && selected === data.portico;
@@ -220,10 +220,10 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
             const nodeSeq = seqByNodeIndex[nodeIndex] ?? null;
             const inRecorrido = !!nodeSeq && nodeSeq.length > 0;
 
-            const fillColor   = empty ? "#F4F7FC" : inRecorrido ? "#D4A700" : isActive ? "#265291" : "#FFFFFF";
-            const strokeColor = empty ? "#C8DDF2" : inRecorrido ? "#B8900A" : isActive ? "#265291" : "#265291";
-            const strokeW     = empty ? 1.5 : inRecorrido ? 2.5 : 2;
-            const dash        = empty ? "5 4" : undefined;
+            const fillColor   = inRecorrido ? "#D4A700" : empty ? "#F4F7FC" : isActive ? "#265291" : "#FFFFFF";
+            const strokeColor = inRecorrido ? "#B8900A" : empty ? "#C8DDF2" : isActive ? "#265291" : "#265291";
+            const strokeW     = inRecorrido ? 2.5 : empty ? 1.5 : 2;
+            const dash        = empty && !inRecorrido ? "5 4" : undefined;
 
             const countColor  = inRecorrido ? "#FFFFFF" : isActive ? "#FFFFFF" : empty ? "rgba(38,82,145,0.30)" : "#265291";
             const labelColor  = inRecorrido ? "rgba(255,255,255,0.85)" : isActive ? "rgba(255,255,255,0.80)" : empty ? "rgba(38,82,145,0.30)" : "rgba(38,82,145,0.65)";
@@ -266,7 +266,7 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
                 )}
 
                 {/* Drop shadow */}
-                {!empty && (
+                {(!empty || inRecorrido) && (
                   <rect
                     x={pos.x + 2}
                     y={pos.y + 4}
