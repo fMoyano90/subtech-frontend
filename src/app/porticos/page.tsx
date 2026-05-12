@@ -15,9 +15,12 @@ import { RecorridoModal } from "@/components/porticos/recorrido-modal";
 import { getToken, getTokenPayload } from "@/lib/auth";
 import {
   type MinaTag,
+  type PorticoStatusId,
+  type PorticoStatusItem,
   type RecorridoResponse,
   POLLING_INTERVAL_MS,
   fetchMinaTagsPage,
+  fetchPorticoStatuses,
 } from "@/lib/mina-tags";
 
 export default function PorticosPage() {
@@ -30,7 +33,9 @@ export default function PorticosPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [porticoStatuses, setPorticoStatuses] = useState<PorticoStatusItem[]>([]);
   const isPollingRef = useRef(false);
+  const isStatusPollingRef = useRef(false);
 
   const loadInitial = useCallback(async () => {
     try {
@@ -59,6 +64,19 @@ export default function PorticosPage() {
     }
   }
 
+  const loadPorticoStatuses = useCallback(async () => {
+    if (isStatusPollingRef.current) return;
+    isStatusPollingRef.current = true;
+    try {
+      const result = await fetchPorticoStatuses();
+      setPorticoStatuses(result.items);
+    } catch {
+      // Keep the diagram available and preserve the last known status if any.
+    } finally {
+      isStatusPollingRef.current = false;
+    }
+  }, []);
+
   const pollSilently = useCallback(async () => {
     if (isPollingRef.current) return;
     isPollingRef.current = true;
@@ -80,7 +98,8 @@ export default function PorticosPage() {
   useEffect(() => {
     if (!getToken()) { router.replace("/"); return; }
     void loadInitial();
-  }, [loadInitial, router]);
+    void loadPorticoStatuses();
+  }, [loadInitial, loadPorticoStatuses, router]);
 
   /* Silent polling every 30s — paused while a recorrido is displayed */
   useEffect(() => {
@@ -92,6 +111,16 @@ export default function PorticosPage() {
     }, POLLING_INTERVAL_MS);
     return () => window.clearInterval(id);
   }, [pollSilently, recorrido]);
+
+  /* Silent polling for backend-computed pórtico online/offline state. */
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      if (!getToken()) return;
+      void loadPorticoStatuses();
+    }, POLLING_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [loadPorticoStatuses]);
 
   /* ── Derived data ── */
 
@@ -114,6 +143,12 @@ export default function PorticosPage() {
       historyCount: etiquetas.size,
     }));
   }, [tags]);
+
+  const statusByPorticoId = useMemo<Partial<Record<PorticoStatusId, PorticoStatusItem>>>(() => {
+    return Object.fromEntries(
+      porticoStatuses.map((item) => [item.id, item]),
+    ) as Partial<Record<PorticoStatusId, PorticoStatusItem>>;
+  }, [porticoStatuses]);
 
   /** Full historical records for the selected pórtico, newest first */
   const sidebarTags = useMemo<MinaTag[]>(() => {
@@ -226,6 +261,7 @@ export default function PorticosPage() {
                     selected={selected}
                     onSelect={setSelected}
                     recorrido={recorrido?.steps ?? null}
+                    statusByPorticoId={statusByPorticoId}
                   />
                 </div>
               </>

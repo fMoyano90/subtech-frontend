@@ -4,7 +4,12 @@
    PorticoMapa — SVG simplified mine diagram with 4 nodes
    ═══════════════════════════════════════════════════════ */
 
-import type { RecorridoStep } from "@/lib/mina-tags";
+import type {
+  PorticoStatus,
+  PorticoStatusId,
+  PorticoStatusItem,
+  RecorridoStep,
+} from "@/lib/mina-tags";
 
 export interface PorticoData {
   portico: string;
@@ -17,6 +22,7 @@ interface PorticoMapaProps {
   selected: string | null;
   onSelect: (portico: string | null) => void;
   recorrido?: RecorridoStep[] | null;
+  statusByPorticoId?: Partial<Record<PorticoStatusId, PorticoStatusItem>>;
 }
 
 /* ──────────────────────────────────────────────────────
@@ -31,10 +37,10 @@ interface PorticoMapaProps {
      index 3 → br      Niveles Inferiores
    ────────────────────────────────────────────────────── */
 const PORTICO_MAP = [
-  { keyword: "840",      short: "Bocamina 840", fallback: "Pórtico Bocamina Cota 840"  },  // left
-  { keyword: "cruce",    short: "Cruce",         fallback: "Cruce Polvorín"             },  // center junction
-  { keyword: "950",      short: "Bocamina 950",  fallback: "Pórtico Bocamina Cota 950"  },  // top
-  { keyword: "inferior", short: "Inferiores",    fallback: "Niveles Inferiores"          },  // bottom-right
+  { id: "portico-840",         keyword: "840",      short: "Bocamina 840", fallback: "Pórtico Bocamina Cota 840"  },  // left
+  { id: "cruce-polvorin",      keyword: "cruce",    short: "Cruce",        fallback: "Cruce Polvorín"             },  // center junction
+  { id: "portico-950",         keyword: "950",      short: "Bocamina 950", fallback: "Pórtico Bocamina Cota 950"  },  // top
+  { id: "niveles-inferiores",  keyword: "inferior", short: "Inferiores",   fallback: "Niveles Inferiores"          },  // bottom-right
 ] as const;
 const POSITIONS = [
   { id: "left",   x: 18,  y: 290, w: 134, h: 86, rx: 14 },
@@ -105,9 +111,63 @@ function splitLabel(text: string): [string, string] {
   return [text.slice(0, bestIdx), text.slice(bestIdx + 1)];
 }
 
+const statusDateFormatter = new Intl.DateTimeFormat("es-CL", {
+  timeZone: "America/Santiago",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
+
+function formatStatusDate(value?: string): string {
+  if (!value) return "Sin señal registrada";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return statusDateFormatter.format(date);
+}
+
+function getStatusPresentation(status?: PorticoStatus) {
+  if (status === "online") {
+    return {
+      label: "Online",
+      color: "#16a34a",
+      dot: "#22c55e",
+      background: "rgba(240,253,244,0.94)",
+      border: "rgba(34,197,94,0.38)",
+    };
+  }
+
+  if (status === "offline") {
+    return {
+      label: "Offline",
+      color: "#dc2626",
+      dot: "#ef4444",
+      background: "rgba(254,242,242,0.94)",
+      border: "rgba(239,68,68,0.38)",
+    };
+  }
+
+  return {
+    label: "No disponible",
+    color: "rgba(38,82,145,0.48)",
+    dot: "rgba(38,82,145,0.35)",
+    background: "rgba(255,255,255,0.82)",
+    border: "rgba(38,82,145,0.18)",
+  };
+}
+
 /* ══════════════════════════════════════════════════════ */
 
-export function PorticoMapa({ porticos, selected, onSelect, recorrido }: PorticoMapaProps) {
+export function PorticoMapa({
+  porticos,
+  selected,
+  onSelect,
+  recorrido,
+  statusByPorticoId,
+}: PorticoMapaProps) {
   // Build per-node sequence lists using the same PORTICO_MAP keywords
   // seqByNodeIndex[i] = array of sequence numbers for node at POSITIONS[i]
   const seqByNodeIndex: (number[] | null)[] = PORTICO_MAP.map(({ keyword }) => {
@@ -123,10 +183,10 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
 
   // Match each position to its pórtico via keyword (case-insensitive substring)
   const nodes = POSITIONS.map((pos, i) => {
-    const { keyword, short, fallback } = PORTICO_MAP[i];
+    const { id, keyword, short, fallback } = PORTICO_MAP[i];
     const data =
       porticos.find((p) => p.portico.toLowerCase().includes(keyword)) ?? null;
-    return { pos, data, short, fallback, nodeIndex: i };
+    return { pos, data, id, short, fallback, nodeIndex: i };
   });
 
   return (
@@ -211,11 +271,13 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
           ))}
 
           {/* ── Nodes ── */}
-          {nodes.map(({ pos, data, fallback, nodeIndex }) => {
+          {nodes.map(({ pos, data, id, fallback, nodeIndex }) => {
             const ncx = cx(pos);
             const ncy = cy(pos);
             const isActive = !!data && selected === data.portico;
             const empty = !data;
+            const statusItem = statusByPorticoId?.[id];
+            const status = getStatusPresentation(statusItem?.status);
 
             const nodeSeq = seqByNodeIndex[nodeIndex] ?? null;
             const inRecorrido = !!nodeSeq && nodeSeq.length > 0;
@@ -248,6 +310,17 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
             const [line1, line2] = splitLabel(data ? data.portico : fallback);
             const twoLines = line2 !== "";
             const displayCount = data ? data.currentCount : 0;
+            const statusBadgeWidth = status.label === "No disponible" ? 84 : 64;
+            const statusBadgeX = ncx - statusBadgeWidth / 2;
+            const statusBadgeY = pos.y - 25;
+            const statusTitle = [
+              `Estado: ${status.label}`,
+              `Ultima señal: ${formatStatusDate(statusItem?.lastSeenAt)}`,
+              `Ultima revision backend: ${statusItem?.checkedAt ? formatStatusDate(statusItem.checkedAt) : "No disponible"}`,
+            ];
+            const tooltip = inRecorrido && nodeSeq
+              ? [`Pasos por este pórtico: ${nodeSeq.join(", ")}`, ...statusTitle].join("\n")
+              : statusTitle.join("\n");
 
             return (
               <g
@@ -260,10 +333,7 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
                 role={data ? "button" : undefined}
                 aria-label={data ? `Pórtico ${data.portico}` : undefined}
               >
-                {/* Tooltip: full sequence on hover */}
-                {inRecorrido && nodeSeq && (
-                  <title>{`Pasos por este pórtico: ${nodeSeq.join(", ")}`}</title>
-                )}
+                <title>{tooltip}</title>
 
                 {/* Drop shadow */}
                 {(!empty || inRecorrido) && (
@@ -289,6 +359,36 @@ export function PorticoMapa({ porticos, selected, onSelect, recorrido }: Portico
                   strokeWidth={strokeW}
                   strokeDasharray={dash}
                 />
+
+                {/* Backend pórtico status */}
+                <g aria-hidden="true">
+                  <rect
+                    x={statusBadgeX}
+                    y={statusBadgeY}
+                    width={statusBadgeWidth}
+                    height={18}
+                    rx={9}
+                    fill={status.background}
+                    stroke={status.border}
+                    strokeWidth={1}
+                  />
+                  <circle
+                    cx={statusBadgeX + 11}
+                    cy={statusBadgeY + 9}
+                    r={3.4}
+                    fill={status.dot}
+                  />
+                  <text
+                    x={statusBadgeX + 19}
+                    y={statusBadgeY + 12}
+                    fontSize="8"
+                    fontWeight="700"
+                    fill={status.color}
+                    style={{ fontFamily: "var(--font-dm-sans, system-ui)" }}
+                  >
+                    {status.label}
+                  </text>
+                </g>
 
                 {/* Content: count (or sequence rows) + label */}
                 <>

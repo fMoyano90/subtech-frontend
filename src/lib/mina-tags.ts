@@ -40,6 +40,32 @@ export interface PaginatedResponse {
   hasMore: boolean;
 }
 
+export type PorticoStatus = "online" | "offline";
+
+export type PorticoStatusId =
+  | "cruce-polvorin"
+  | "portico-950"
+  | "niveles-inferiores"
+  | "portico-840";
+
+export interface PorticoStatusItem {
+  id: PorticoStatusId;
+  name: string;
+  channelId: string;
+  order: number;
+  lastEntryId?: number;
+  lastSeenAt?: string;
+  lastValue?: string;
+  status: PorticoStatus;
+  checkedAt: string;
+  offlineSince?: string;
+}
+
+export interface PorticoStatusResponse {
+  items: PorticoStatusItem[];
+  count: number;
+}
+
 /* ═══════════════════════════════════════════
    Constants
    ═══════════════════════════════════════════ */
@@ -136,6 +162,11 @@ export async function fetchLatestMinaTags(): Promise<MinaTag[]> {
     '/mina-tags/latest',
   );
   return res.items.map(normalizeTag);
+}
+
+/** Fetches backend-computed online/offline status for each pórtico. */
+export async function fetchPorticoStatuses(): Promise<PorticoStatusResponse> {
+  return fetchWithAuth<PorticoStatusResponse>('/mina-tags/porticos/status');
 }
 
 /* ═══════════════════════════════════════════
