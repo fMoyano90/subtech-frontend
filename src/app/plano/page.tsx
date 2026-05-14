@@ -12,7 +12,7 @@ import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { LevelCard } from "@/components/plano/level-card";
 import { ExteriorCard } from "@/components/plano/exterior-card";
 import { PlanoSidebar } from "@/components/plano/plano-sidebar";
-import { getToken, getTokenPayload } from "@/lib/auth";
+import { getToken } from "@/lib/auth";
 import { EXTERIOR_MINA_STATUS, isExteriorMinaLocation } from "@/lib/location-status";
 import {
   type MinaTag,
@@ -97,7 +97,7 @@ export default function PlanoPage() {
 
   /* Auth check + initial load */
   useEffect(() => {
-    if (!getToken()) { router.replace("/"); return; }
+    if (!getToken()) { router.replace("/login"); return; }
     void loadInitial();
   }, [loadInitial, router]);
 

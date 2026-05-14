@@ -102,7 +102,7 @@ export function DashboardNavbar({ title, links, onLogout }: DashboardNavbarProps
       return;
     }
     removeToken();
-    router.replace("/");
+    router.replace("/login");
   }, [onLogout, router]);
 
   const accountName = sessionUser?.name ?? "Mi cuenta";

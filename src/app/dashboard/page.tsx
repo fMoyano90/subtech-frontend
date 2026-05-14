@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
-import { getToken, getTokenPayload } from "@/lib/auth";
+import { getToken } from "@/lib/auth";
 import { isInteriorMinaLocation } from "@/lib/location-status";
 import {
   type MinaTag,
@@ -17,6 +17,7 @@ import {
   POLLING_INTERVAL_MS,
   formatDate,
   formatTime,
+  tsToDate,
   hasMeaningfulTagChanges,
   fetchLatestMinaTags,
   fetchMinaTagsPage,
@@ -310,7 +311,7 @@ export default function DashboardPage() {
 
   /* Auth check + initial load */
   useEffect(() => {
-    if (!getToken()) { router.replace("/"); return; }
+    if (!getToken()) { router.replace("/login"); return; }
     void loadInitial();
   }, [loadInitial, router]);
 
@@ -345,7 +346,7 @@ export default function DashboardPage() {
     return sorted.filter((t) => {
       if (q && !t.etiqueta.toLowerCase().includes(q)) return false;
       if (dateFrom || dateTo) {
-        const iso = new Date(t.timestap * 1000).toISOString().slice(0, 10);
+        const iso = tsToDate(t.timestap).toISOString().slice(0, 10);
         if (dateFrom && iso < dateFrom) return false;
         if (dateTo   && iso > dateTo)   return false;
       }

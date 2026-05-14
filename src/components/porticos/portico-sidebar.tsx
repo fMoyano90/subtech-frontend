@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { type MinaTag, CATEGORIES, formatDate, formatTime, tsToDate } from "@/lib/mina-tags";
 
 interface PorticoSidebarProps {
@@ -25,10 +25,13 @@ export function PorticoSidebar({
   const [dateTo, setDateTo]     = useState("");
 
   /* ── Visible limit ── */
-  const [visibleLimit, setVisibleLimit] = useState(50);
-
-  /* Reset limit when pórtico or filters change */
-  useEffect(() => setVisibleLimit(50), [selected, dateFrom, dateTo]);
+  const visibleLimitKey = `${selected ?? ""}|${dateFrom}|${dateTo}`;
+  const [visibleLimitState, setVisibleLimitState] = useState({
+    key: "",
+    limit: 50,
+  });
+  const visibleLimit =
+    visibleLimitState.key === visibleLimitKey ? visibleLimitState.limit : 50;
 
   /* ── Apply date filter ── */
   const filtered = useMemo(() => {
@@ -175,7 +178,10 @@ export function PorticoSidebar({
               {(visibleLimit < filtered.length || hasMore) && (
                 <button
                   onClick={() => {
-                    setVisibleLimit((l) => l + 50);
+                    setVisibleLimitState({
+                      key: visibleLimitKey,
+                      limit: visibleLimit + 50,
+                    });
                     if (visibleLimit >= filtered.length) {
                       onLoadMore?.();
                     }

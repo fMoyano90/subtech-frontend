@@ -12,7 +12,7 @@ import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 import { PorticoMapa } from "@/components/porticos/portico-mapa";
 import { PorticoSidebar } from "@/components/porticos/portico-sidebar";
 import { RecorridoModal } from "@/components/porticos/recorrido-modal";
-import { getToken, getTokenPayload } from "@/lib/auth";
+import { getToken } from "@/lib/auth";
 import {
   type MinaTag,
   type PorticoStatusId,
@@ -96,7 +96,7 @@ export default function PorticosPage() {
 
   /* Auth check + initial load */
   useEffect(() => {
-    if (!getToken()) { router.replace("/"); return; }
+    if (!getToken()) { router.replace("/login"); return; }
     void loadInitial();
     void loadPorticoStatuses();
   }, [loadInitial, loadPorticoStatuses, router]);

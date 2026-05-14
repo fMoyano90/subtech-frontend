@@ -36,7 +36,7 @@ export default function UsuariosPage() {
   /* Auth + role guard */
   useEffect(() => {
     if (!getToken()) {
-      router.replace("/");
+      router.replace("/login");
       return;
     }
     const p = getTokenPayload();
