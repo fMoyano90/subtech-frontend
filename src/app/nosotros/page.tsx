@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/scroll-reveal";
+import Navbar from "@/components/navbar";
 
 const team = [
   {
@@ -44,30 +45,7 @@ function SectionTitle({ eyebrow, title, lead }: { eyebrow: string; title: string
 export default function NosotrosPage() {
   return (
     <main className="min-h-screen bg-[#020611] text-white">
-      <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between gap-4 px-4 py-4 md:px-10">
-        <Link
-          href="/"
-          aria-label="Subtech Solutions"
-          className="flex items-center rounded-full border border-white/10 bg-black/70 px-4 py-2 backdrop-blur-xl"
-        >
-          <Image src="/SS_LOGO_COLOR_H.png" alt="Subtech Solutions" width={168} height={44} priority className="h-8 w-auto" />
-        </Link>
-
-        <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-black/65 p-1 backdrop-blur-xl md:flex">
-          <Link href="/#problema" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">qué resolvemos</Link>
-          <Link href="/#tecnologia" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">tecnología</Link>
-          <Link href="/#red" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">red interior mina</Link>
-          <Link href="/#plataforma" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">plataforma web</Link>
-          <Link href="/nosotros" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">nosotros</Link>
-        </div>
-
-        <Link
-          href="/login"
-          className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-subtech-light-blue"
-        >
-          login
-        </Link>
-      </nav>
+      <Navbar />
 
       <ScrollReveal>
       <section className="relative overflow-hidden px-4 pt-32 pb-20 md:px-10 lg:pt-40 lg:pb-28">

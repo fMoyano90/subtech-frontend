@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/scroll-reveal";
+import Navbar from "@/components/navbar";
 
 const painPoints = [
   {
@@ -114,59 +115,36 @@ function PainPointCard({ point }: { point: (typeof painPoints)[number] }) {
 export default function HomePage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#020611] text-white">
-      <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between gap-4 px-4 py-4 md:px-10">
-        <Link
-          href="/"
-          aria-label="Subtech Solutions"
-          className="flex items-center rounded-full border border-white/10 bg-black/70 px-4 py-2 backdrop-blur-xl"
-        >
-          <Image src="/SS_LOGO_COLOR_H.png" alt="Subtech Solutions" width={168} height={44} priority className="h-8 w-auto" />
-        </Link>
-
-        <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-black/65 p-1 backdrop-blur-xl md:flex">
-          <a href="#problema" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">qué resolvemos</a>
-          <a href="#tecnologia" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">tecnología</a>
-          <a href="#red" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">red interior mina</a>
-          <a href="#plataforma" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">plataforma web</a>
-          <Link href="/nosotros" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">nosotros</Link>
-        </div>
-
-        <Link
-          href="/login"
-          className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-subtech-light-blue"
-        >
-          login
-        </Link>
-      </nav>
+      <Navbar />
 
       <ScrollReveal>
-      <section className="relative min-h-screen overflow-hidden bg-black px-4 pt-28 md:px-10">
+      <section className="relative min-h-screen overflow-hidden bg-black px-4 pt-16 md:px-10 md:pt-28">
         <Image
           src="/entrada-mina.jpg"
           alt="Entrada mina"
           fill
-          className="object-cover opacity-30"
+          className="object-cover object-right md:object-center opacity-30"
           priority
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(38,82,145,0.55),transparent 28%),radial-gradient(circle_at_75%_30%,rgba(111,176,226,0.28),transparent 25%),linear-gradient(180deg,rgba(0,0,0,0.05),#000_88%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(2,6,17,0.95)_0%,rgba(2,6,17,0.7)_40%,rgba(2,6,17,0.2)_70%,transparent_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(111,176,226,0.05)_1px,transparent 1px),linear-gradient(90deg,rgba(111,176,226,0.05)_1px,transparent 1px)] bg-[size:70px_70px]" />
         <div className="absolute inset-x-0 top-1/4 h-64 bg-subtech-blue/10 blur-3xl" />
 
         <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-[1280px] flex-col justify-center">
-          <div data-reveal-hero className="mb-10 w-fit rounded-xl border border-subtech-yellow/30 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
+          <div data-reveal-hero className="mb-8 w-fit rounded-xl border border-subtech-yellow/30 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
             TRL 7-8 - Sistema validado en operacion real
           </div>
-          <h1 data-reveal-hero className="max-w-6xl text-[clamp(4rem,13vw,10rem)] font-semibold leading-[0.84] tracking-[-0.07em] text-white">
+          <h1 data-reveal-hero className="max-w-6xl text-[clamp(3.5rem,11vw,10rem)] font-semibold leading-[0.84] tracking-[-0.07em] text-white">
             Georeferencia<br />subterranea<br />real
           </h1>
-          <p data-reveal-hero className="mt-8 max-w-sm text-lg leading-8 text-white/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
+          <p data-reveal-hero className="mt-6 max-w-sm text-base leading-7 text-white/70 md:mt-8 md:text-lg md:leading-8" style={{ fontFamily: "var(--font-dm-sans)" }}>
             Geolocalizacion en tiempo real para mineria subterranea, donde el GPS no existe.
           </p>
-          <div data-reveal-hero className="mt-10 flex flex-wrap gap-4">
-            <Link href="/login" className="rounded-full border border-subtech-blue bg-subtech-dark-blue px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:bg-subtech-blue">
+          <div data-reveal-hero className="mt-8 flex flex-wrap justify-end gap-4 md:justify-start md:mt-10 md:gap-4">
+            <Link href="/login" className="rounded-full border border-subtech-blue bg-subtech-dark-blue px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:bg-subtech-blue md:px-7 md:py-4">
               entrar al sistema
             </Link>
-            <a href="#plataforma" className="rounded-full border border-subtech-yellow/35 px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-subtech-yellow transition hover:-translate-y-0.5 hover:bg-subtech-yellow/10">
+            <a href="#plataforma" className="rounded-full border border-subtech-yellow/35 px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-subtech-yellow transition hover:-translate-y-0.5 hover:bg-subtech-yellow/10 md:px-7 md:py-4">
               agenda una reunión
             </a>
           </div>
