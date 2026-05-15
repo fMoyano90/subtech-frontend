@@ -16,22 +16,22 @@ export default function Navbar() {
           aria-label="Subtech Solutions"
           className="flex items-center rounded-full border border-white/10 bg-black/70 px-4 py-2 backdrop-blur-xl"
         >
-          <Image src="/SS_LOGO_COLOR_H.png" alt="Subtech Solutions" width={168} height={44} priority className="h-8 w-auto" />
+          <Image src="/logo.svg" alt="Subtech Solutions" width={168} height={44} priority className="h-8 w-auto" />
         </Link>
 
         <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/65 p-1 backdrop-blur-xl">
-          <Link href="/#problema" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">qué resolvemos</Link>
-          <Link href="/#tecnologia" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">tecnología</Link>
-          <Link href="/#red" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">red interior mina</Link>
-          <Link href="/#plataforma" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">plataforma web</Link>
-          <Link href="/nosotros" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">nosotros</Link>
+          <Link href="/#problema" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Qué resolvemos</Link>
+          <Link href="/#tecnologia" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Tecnología</Link>
+          <Link href="/#red" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Red interior mina</Link>
+          <Link href="/#plataforma" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Plataforma web</Link>
+          <Link href="/nosotros" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Nosotros</Link>
         </div>
 
         <Link
           href="/login"
           className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-subtech-light-blue"
         >
-          login
+          Inicio de sesión
         </Link>
       </div>
 
