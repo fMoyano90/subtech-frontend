@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ScrollReveal from "@/components/scroll-reveal";
 
 const painPoints = [
   {
@@ -78,7 +79,7 @@ const testimonials = [
 
 function SectionTitle({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?: string }) {
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl" data-reveal>
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-yellow">
         {eyebrow}
       </p>
@@ -96,7 +97,7 @@ function SectionTitle({ eyebrow, title, lead }: { eyebrow: string; title: string
 
 function PainPointCard({ point }: { point: (typeof painPoints)[number] }) {
   return (
-    <article className="group rounded-3xl border border-subtech-blue/10 bg-white p-7 text-center shadow-[0_24px_60px_rgba(2,6,17,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(38,82,145,0.16)]">
+    <article data-reveal className="group rounded-3xl border border-subtech-blue/10 bg-white p-7 text-center shadow-[0_24px_60px_rgba(2,6,17,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(38,82,145,0.16)]">
       <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-subtech-light-blue/10">
         <Image src={point.icon} alt="" width={80} height={80} className="h-20 w-20 object-contain" />
       </div>
@@ -138,6 +139,7 @@ export default function HomePage() {
         </Link>
       </nav>
 
+      <ScrollReveal>
       <section className="relative min-h-screen overflow-hidden bg-black px-4 pt-28 md:px-10">
         <Image
           src="/entrada-mina.jpg"
@@ -151,16 +153,16 @@ export default function HomePage() {
         <div className="absolute inset-x-0 top-1/4 h-64 bg-subtech-blue/10 blur-3xl" />
 
         <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-[1280px] flex-col justify-center">
-          <div className="mb-10 w-fit rounded-xl border border-subtech-yellow/30 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
+          <div data-reveal-hero className="mb-10 w-fit rounded-xl border border-subtech-yellow/30 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
             TRL 7-8 - Sistema validado en operacion real
           </div>
-          <h1 className="max-w-6xl text-[clamp(4rem,13vw,10rem)] font-semibold leading-[0.84] tracking-[-0.07em] text-white">
+          <h1 data-reveal-hero className="max-w-6xl text-[clamp(4rem,13vw,10rem)] font-semibold leading-[0.84] tracking-[-0.07em] text-white">
             Georeferencia<br />subterranea<br />real
           </h1>
-          <p className="mt-8 max-w-sm text-lg leading-8 text-white/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
+          <p data-reveal-hero className="mt-8 max-w-sm text-lg leading-8 text-white/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
             Geolocalizacion en tiempo real para mineria subterranea, donde el GPS no existe.
           </p>
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div data-reveal-hero className="mt-10 flex flex-wrap gap-4">
             <Link href="/login" className="rounded-full border border-subtech-blue bg-subtech-dark-blue px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:bg-subtech-blue">
               entrar al sistema
             </Link>
@@ -169,7 +171,7 @@ export default function HomePage() {
             </a>
           </div>
 
-          <div className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 text-right md:block">
+          <div data-reveal-hero className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 text-right md:block">
             <div className="mb-8">
               <p className="text-6xl font-semibold tracking-[-0.05em]">24/7</p>
               <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/45">operación continua</p>
@@ -188,7 +190,7 @@ export default function HomePage() {
 
       <section id="problema" className="bg-[#f4f8fb] px-4 py-20 text-[#0a1628] md:px-10 lg:py-24">
         <div className="mx-auto max-w-[1280px]">
-          <div className="mx-auto max-w-3xl text-center">
+          <div data-reveal className="mx-auto max-w-3xl text-center">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-blue">
               La realidad subterránea
             </p>
@@ -216,7 +218,7 @@ export default function HomePage() {
           />
           <div className="mt-12 grid overflow-hidden rounded-2xl border border-subtech-blue/10 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
-              <article key={feature.number} className="group border-b border-r border-subtech-blue/10 bg-[#070d1a] p-7 transition hover:bg-subtech-dark-blue/15">
+              <article key={feature.number} data-reveal className="group border-b border-r border-subtech-blue/10 bg-[#070d1a] p-7 transition hover:bg-subtech-dark-blue/15">
                 <p className="text-5xl font-bold tracking-[-0.06em] text-subtech-blue/10 transition group-hover:text-subtech-blue/20">{feature.number}</p>
                 <h3 className="mt-6 text-lg font-semibold text-white">{feature.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-subtech-light-blue/55" style={{ fontFamily: "var(--font-dm-sans)" }}>
@@ -235,7 +237,7 @@ export default function HomePage() {
           title="La red que hace posible el sistema"
           lead="Instalación de red inalámbrica propia en el interior de la mina, diseñada para operar bajo tierra donde ninguna infraestructura estándar funciona. La conectividad que hace posible el monitoreo en tiempo real."
         />
-        <div className="mt-10 overflow-hidden rounded-xl border border-subtech-blue/15 bg-black shadow-[0_30px_70px_rgba(0,0,0,0.6)]">
+        <div data-reveal className="mt-10 overflow-hidden rounded-xl border border-subtech-blue/15 bg-black shadow-[0_30px_70px_rgba(0,0,0,0.6)]">
           <div className="relative flex min-h-[360px] items-end justify-between overflow-hidden bg-black p-6 md:min-h-[520px]">
             <Image
               src="/instalacion-wifi.jpg"
@@ -255,7 +257,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
-          <div className="group relative overflow-hidden rounded-2xl border border-subtech-yellow/15 bg-[linear-gradient(135deg,rgba(255,241,156,0.12),rgba(38,82,145,0.16)_38%,rgba(7,18,37,0.96))] p-7 transition duration-300 hover:-translate-y-1 hover:border-subtech-yellow/35 hover:shadow-[0_24px_70px_rgba(255,241,156,0.08)]">
+          <div data-reveal className="group relative overflow-hidden rounded-2xl border border-subtech-yellow/15 bg-[linear-gradient(135deg,rgba(255,241,156,0.12),rgba(38,82,145,0.16)_38%,rgba(7,18,37,0.96))] p-7 transition duration-300 hover:-translate-y-1 hover:border-subtech-yellow/35 hover:shadow-[0_24px_70px_rgba(255,241,156,0.08)]">
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-subtech-yellow/10 blur-3xl transition group-hover:bg-subtech-yellow/20" />
             <div className="relative flex items-start justify-between gap-6">
               <div>
@@ -271,7 +273,7 @@ export default function HomePage() {
               El sistema crece con la operación sin rediseñar la arquitectura base: más pórticos, más cobertura, misma lógica operacional.
             </p>
           </div>
-          <div className="group relative overflow-hidden rounded-2xl border border-subtech-light-blue/15 bg-[linear-gradient(135deg,rgba(111,176,226,0.14),rgba(38,82,145,0.18)_42%,rgba(7,18,37,0.96))] p-7 transition duration-300 hover:-translate-y-1 hover:border-subtech-light-blue/35 hover:shadow-[0_24px_70px_rgba(111,176,226,0.1)]">
+          <div data-reveal className="group relative overflow-hidden rounded-2xl border border-subtech-light-blue/15 bg-[linear-gradient(135deg,rgba(111,176,226,0.14),rgba(38,82,145,0.18)_42%,rgba(7,18,37,0.96))] p-7 transition duration-300 hover:-translate-y-1 hover:border-subtech-light-blue/35 hover:shadow-[0_24px_70px_rgba(111,176,226,0.1)]">
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-subtech-light-blue/10 blur-3xl transition group-hover:bg-subtech-light-blue/20" />
             <div className="relative flex items-start justify-between gap-6">
               <div>
@@ -315,7 +317,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="relative">
+          <div data-reveal className="relative">
             <div className="absolute inset-x-8 bottom-4 h-24 rounded-full bg-subtech-blue/25 blur-3xl" />
             <Image
               src="/mockup-web-1.png"
@@ -333,7 +335,7 @@ export default function HomePage() {
         <SectionTitle eyebrow="Validacion de mercado" title="Lo dice quien opera la mina" />
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <article key={testimonial.author} className="rounded-2xl border border-subtech-blue/10 bg-[#070d1a] p-7">
+            <article key={testimonial.author} data-reveal className="rounded-2xl border border-subtech-blue/10 bg-[#070d1a] p-7">
               <p className="text-base italic leading-8 text-subtech-light-blue/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
                 &quot;{testimonial.quote}&quot;
               </p>
@@ -354,16 +356,16 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(38,82,145,0.34),transparent_42%),linear-gradient(180deg,#020611_0%,rgba(2,6,17,0.55)_35%,rgba(2,6,17,0.62)_65%,#020611_100%)]" />
         <div className="relative mx-auto max-w-3xl">
-          <p className="mx-auto mb-7 w-fit rounded-xl border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
+          <p data-reveal className="mx-auto mb-7 w-fit rounded-xl border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
             Sistema listo para operar
           </p>
-          <h2 className="text-5xl font-bold leading-[1.02] tracking-[-0.05em] text-white md:text-7xl">
+          <h2 data-reveal className="text-5xl font-bold leading-[1.02] tracking-[-0.05em] text-white md:text-7xl">
             El subsuelo chileno espera ser digitalizado
           </h2>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
+          <p data-reveal className="mx-auto mt-6 max-w-2xl text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
             Tecnologia validada, cliente real y modelo operacional probado para escalar la trazabilidad subterranea.
           </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <div data-reveal className="mt-10 flex flex-wrap justify-center gap-4">
             <Link href="/login" className="rounded-full border border-subtech-blue bg-subtech-dark-blue px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-subtech-blue">
               ir al login
             </Link>
@@ -373,6 +375,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      </ScrollReveal>
 
       <footer className="border-t border-subtech-blue/10 bg-black/70 px-4 py-8 md:px-10">
         <div className="mx-auto max-w-[1180px] text-center text-sm text-subtech-light-blue/45">

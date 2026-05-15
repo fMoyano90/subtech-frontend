@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ScrollReveal from "@/components/scroll-reveal";
 
 const team = [
   {
@@ -24,7 +25,7 @@ const team = [
 
 function SectionTitle({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?: string }) {
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl" data-reveal>
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-yellow">
         {eyebrow}
       </p>
@@ -68,22 +69,23 @@ export default function NosotrosPage() {
         </Link>
       </nav>
 
+      <ScrollReveal>
       <section className="relative overflow-hidden px-4 pt-32 pb-20 md:px-10 lg:pt-40 lg:pb-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(38,82,145,0.5),transparent_28%),radial-gradient(circle_at_78%_40%,rgba(111,176,226,0.16),transparent_30%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(111,176,226,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(111,176,226,0.04)_1px,transparent_1px)] bg-[size:64px_64px]" />
         <div className="relative mx-auto grid max-w-[1180px] gap-10 lg:grid-cols-[0.92fr_0.58fr] lg:items-end">
           <div>
-            <p className="mb-5 w-fit rounded-full border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-yellow">
+            <p data-reveal-hero className="mb-5 w-fit rounded-full border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-yellow">
               Quiénes somos
             </p>
-            <h1 className="max-w-4xl text-5xl font-bold leading-[1.02] tracking-[-0.06em] text-white md:text-7xl">
+            <h1 data-reveal-hero className="max-w-4xl text-5xl font-bold leading-[1.02] tracking-[-0.06em] text-white md:text-7xl">
               Ingenieria minera convertida en tecnologia operativa.
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-9 text-subtech-light-blue/65" style={{ fontFamily: "var(--font-dm-sans)" }}>
+            <p data-reveal-hero className="mt-7 max-w-2xl text-lg leading-9 text-subtech-light-blue/65" style={{ fontFamily: "var(--font-dm-sans)" }}>
               Somos Subtech Solutions: un equipo técnico que nació para resolver un problema real de la mineria subterranea: saber dónde están las personas, equipos y activos cuando el GPS y el Wifi no existe.
             </p>
           </div>
-          <div className="rounded-3xl border border-subtech-blue/15 bg-[#08101f]/85 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur">
+          <div data-reveal-hero className="rounded-3xl border border-subtech-blue/15 bg-[#08101f]/85 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur">
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-2xl border border-subtech-blue/10 bg-subtech-blue/5 p-5">
                 <p className="text-4xl font-bold tracking-[-0.05em] text-subtech-yellow">TRL 7-8</p>
@@ -104,7 +106,7 @@ export default function NosotrosPage() {
       </section>
 
       <section className="mx-auto grid max-w-[1180px] gap-12 px-4 py-24 md:grid-cols-[0.9fr_1.1fr] md:px-10 lg:py-32">
-        <div className="relative min-h-[420px] overflow-hidden rounded-2xl border border-subtech-blue/15 bg-[#08101f] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+        <div data-reveal className="relative min-h-[420px] overflow-hidden rounded-2xl border border-subtech-blue/15 bg-[#08101f] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
           <Image
             src="/Instalación 1.jpg"
             alt="Instalación del sistema Subtech en interior mina"
@@ -148,7 +150,7 @@ export default function NosotrosPage() {
         <div className="mx-auto max-w-[1180px]">
           <SectionTitle eyebrow="Mina Don Jaime · Bocamina Cota 840" title="El primer pórtico. El primer hito." />
           <div className="mt-12 grid gap-12 md:grid-cols-2 md:items-center">
-            <div>
+            <div data-reveal>
               <p className="text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
                 La instalación del primer pórtico de georeferenciación en la bocamina marcó el inicio de la operación comercial. Un sistema que nació como tesis universitaria, hoy detecta en tiempo real cada activo que cruza el umbral de la mina.
               </p>
@@ -174,7 +176,7 @@ export default function NosotrosPage() {
                 </div>
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-xl border border-subtech-blue/10">
+            <div data-reveal className="relative overflow-hidden rounded-xl border border-subtech-blue/10">
               <Image
                 src="/entrada-mina.jpg"
                 alt="Primer pórtico instalado en Bocamina Cota 840"
@@ -201,7 +203,7 @@ export default function NosotrosPage() {
           />
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {team.map((member) => (
-              <article key={member.name} className="rounded-2xl border border-subtech-blue/15 bg-[#08101f] p-8">
+              <article key={member.name} data-reveal className="rounded-2xl border border-subtech-blue/15 bg-[#08101f] p-8">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-subtech-dark-blue to-subtech-blue text-xl font-bold text-white">
                   {member.initials}
                 </div>
@@ -226,22 +228,24 @@ export default function NosotrosPage() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(38,82,145,0.32),transparent_44%),linear-gradient(180deg,#020611_0%,rgba(2,6,17,0.58)_36%,rgba(2,6,17,0.66)_70%,#020611_100%)]" />
         <div className="relative mx-auto max-w-3xl">
-          <p className="mx-auto mb-7 w-fit rounded-xl border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
+          <p data-reveal className="mx-auto mb-7 w-fit rounded-xl border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
             Hablemos de tu operación
           </p>
-          <h2 className="text-5xl font-bold leading-[1.02] tracking-[-0.05em] text-white md:text-7xl">
+          <h2 data-reveal className="text-5xl font-bold leading-[1.02] tracking-[-0.05em] text-white md:text-7xl">
             Si quieren conversar con nosotros, agendemos una reunión.
           </h2>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
+          <p data-reveal className="mx-auto mt-6 max-w-2xl text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
             Podemos revisar su caso, entender los puntos críticos de la faena y evaluar cómo llevar trazabilidad operacional al interior mina.
           </p>
-          <div className="mt-10 flex justify-center">
+          <div data-reveal className="mt-10 flex justify-center">
             <a href="mailto:christian@subtechsolutions.cl" className="rounded-full border border-subtech-yellow/35 bg-subtech-yellow/10 px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-subtech-yellow transition hover:bg-subtech-yellow/20">
               agendar reunión
             </a>
           </div>
         </div>
       </section>
+
+      </ScrollReveal>
 
       <footer className="border-t border-subtech-blue/10 bg-black/70 px-4 py-8 md:px-10">
         <div className="mx-auto max-w-[1180px] text-center text-sm text-subtech-light-blue/45">
