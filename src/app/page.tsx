@@ -1,336 +1,366 @@
-"use client";
-
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { login, saveToken, type AuthError } from "@/lib/auth";
+import Link from "next/link";
+import ScrollReveal from "@/components/scroll-reveal";
+import Navbar from "@/components/navbar";
 
-function EyeIcon({ open }: { open: boolean }) {
-  if (open) {
-    return (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
-    );
-  }
+const painPoints = [
+  {
+    icon: "/icono-tiempo.svg",
+    title: "Tiempo perdido buscando",
+    body: "Tu equipo pasa horas localizando herramientas, repuestos o equipos mal ubicados. Horas que no suman a la producción.",
+  },
+  {
+    icon: "/icono%20legal.svg",
+    title: "El riesgo legal es real",
+    body: "Sin trazabilidad digital, no tienes prueba de dónde estaba tu gente en caso de incidente. La ley te pide que controles — y que lo demuestres.",
+  },
+  {
+    icon: "/icono-emergencia.svg",
+    title: "¿Quién está adentro?",
+    body: "Cuando hay un derrumbe o emergencia a 300 metros de profundidad, necesitas saber exactamente quién está dónde. Las rondas no son suficientes.",
+  },
+];
+
+const features = [
+  {
+    number: "01",
+    title: "Profundidad garantizada",
+    body: "Geolocalizacion operativa hasta 1.700 m bajo superficie con infraestructura propia instalada en interior mina.",
+    accent: "1.700 m operativos",
+  },
+  {
+    number: "02",
+    title: "Sectorizacion inteligente",
+    body: "Division por niveles estrategicos para acelerar respuesta ante emergencias y asignar recursos con mejor criterio.",
+    accent: "3 niveles activos",
+  },
+  {
+    number: "03",
+    title: "Flota mixta completa",
+    body: "Seguimiento de maquinaria, vehiculos y personal en una sola plataforma para ver la operacion completa.",
+    accent: "9 equipos + 17 personas",
+  },
+  {
+    number: "04",
+    title: "Dashboard propietario",
+    body: "Plano de mina, historial de porticos y trazabilidad de activos accesible desde superficie en tiempo real.",
+    accent: "12 licencias activas",
+  },
+  {
+    number: "05",
+    title: "Porticos TAG robustos",
+    body: "Puntos de control de alta resistencia en bocaminas y cruces criticos con arquitectura escalable.",
+    accent: "4 porticos instalados",
+  },
+  {
+    number: "06",
+    title: "Servicio continuo",
+    body: "Instalacion, soporte y mantenimiento para sostener continuidad operacional en faenas subterraneas.",
+    accent: "Operacion 24/7",
+  },
+];
+
+const testimonials = [
+  {
+    quote: "El sistema nos permite saber en tiempo real donde esta cada activo dentro de la mina.",
+    author: "Christian Vidal Roa",
+    role: "Jefe de Ingenieria y Proyectos",
+  },
+  {
+    quote: "Pasamos de un portico piloto a cuatro en produccion. La escalabilidad del sistema es real.",
+    author: "Gerencia General",
+    role: "Compania Minera La Patagua",
+  },
+  {
+    quote: "El historial de maquinaria y personal cambia como planificamos y respondemos ante emergencias.",
+    author: "Jefe de Mina",
+    role: "Mina Don Jaime",
+  },
+];
+
+function SectionTitle({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?: string }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
+    <div className="max-w-2xl" data-reveal>
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-yellow">
+        {eyebrow}
+      </p>
+      <h2 className="text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-white md:text-5xl">
+        {title}
+      </h2>
+      {lead ? (
+        <p className="mt-5 text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
+          {lead}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
-function LockIcon() {
+function PainPointCard({ point }: { point: (typeof painPoints)[number] }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
+    <article data-reveal className="group rounded-3xl border border-subtech-blue/10 bg-white p-7 text-center shadow-[0_24px_60px_rgba(2,6,17,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(38,82,145,0.16)]">
+      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-subtech-light-blue/10">
+        <Image src={point.icon} alt="" width={80} height={80} className="h-20 w-20 object-contain" />
+      </div>
+      <h3 className="mt-7 text-xl font-bold leading-tight tracking-[-0.02em] text-[#0a1628]">
+        {point.title}
+      </h3>
+      <p className="mt-4 text-sm leading-7 text-slate-600 md:text-[15px]" style={{ fontFamily: "var(--font-dm-sans)" }}>
+        {point.body}
+      </p>
+    </article>
   );
 }
 
-function MailIcon() {
+export default function HomePage() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
-  );
-}
+    <main className="min-h-screen overflow-hidden bg-[#020611] text-white">
+      <Navbar />
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const { accessToken } = await login(email, password);
-      saveToken(accessToken);
-      router.push("/dashboard");
-    } catch (err) {
-      const authErr = err as AuthError;
-      setError(authErr.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="flex min-h-screen">
-      {/* Left panel — Brand */}
-      <div className="relative hidden w-[52%] overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
-        style={{
-          background: "linear-gradient(145deg, #1a3f73 0%, #265291 40%, #2d5fa6 70%, #3468b0 100%)",
-        }}
-      >
-        {/* Noise texture overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-            backgroundSize: "128px 128px",
-          }}
+      <ScrollReveal>
+      <section className="relative min-h-screen overflow-hidden bg-black px-4 pt-16 md:px-10 md:pt-28">
+        <Image
+          src="/entrada-mina.jpg"
+          alt="Entrada mina"
+          fill
+          className="object-cover object-right md:object-center opacity-30"
+          priority
         />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(2,6,17,0.95)_0%,rgba(2,6,17,0.7)_40%,rgba(2,6,17,0.2)_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(111,176,226,0.05)_1px,transparent 1px),linear-gradient(90deg,rgba(111,176,226,0.05)_1px,transparent 1px)] bg-[size:70px_70px]" />
+        <div className="absolute inset-x-0 top-1/4 h-64 bg-subtech-blue/10 blur-3xl" />
 
-        {/* Geometric floating shapes */}
-        <div className="pointer-events-none absolute inset-0">
-          {/* Large pentagon — top right */}
-          <div
-            className="animate-float-slow absolute right-[8%] top-[12%] h-28 w-28 opacity-[0.07]"
-            style={{
-              clipPath: "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
-              background: "#B6E2FF",
-            }}
-          />
-          {/* Small diamond — bottom left */}
-          <div
-            className="animate-float-medium absolute bottom-[18%] left-[12%] h-16 w-16 opacity-[0.08]"
-            style={{
-              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-              background: "#FFF19C",
-            }}
-          />
-          {/* Thin chevron — mid left */}
-          <div
-            className="animate-float-fast absolute left-[6%] top-[35%] h-20 w-20 opacity-[0.06]"
-            style={{
-              clipPath: "polygon(0% 0%, 60% 50%, 0% 100%, 15% 50%)",
-              background: "#B6E2FF",
-            }}
-          />
-          {/* Triangle — bottom right */}
-          <div
-            className="animate-float-medium absolute bottom-[25%] right-[15%] h-14 w-14 opacity-[0.05]"
-            style={{
-              clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
-              background: "#6FB0E2",
-            }}
-          />
-          {/* Hexagon — top left */}
-          <div
-            className="animate-float-slow absolute left-[18%] top-[8%] h-10 w-10 opacity-[0.07]"
-            style={{
-              clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
-              background: "#F3FFFF",
-            }}
-          />
-          {/* Accent line — diagonal */}
-          <div
-            className="animate-float-fast absolute right-[30%] top-[60%] h-px w-32 origin-center rotate-[-25deg] opacity-[0.1]"
-            style={{ background: "linear-gradient(90deg, transparent, #B6E2FF, transparent)" }}
-          />
-          {/* Small dot cluster */}
-          <div className="animate-float-medium absolute bottom-[40%] left-[30%] flex gap-2 opacity-[0.08]">
-            <div className="h-2 w-2 rounded-full bg-subtech-light-blue" />
-            <div className="h-1.5 w-1.5 rounded-full bg-subtech-yellow" />
-            <div className="h-2.5 w-2.5 rounded-full bg-subtech-ice" />
+        <div className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-[1280px] flex-col justify-center">
+          <div data-reveal-hero className="mb-8 w-fit rounded-xl border border-subtech-yellow/30 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
+            TRL 7-8 - Sistema validado en operacion real
+          </div>
+          <h1 data-reveal-hero className="max-w-6xl text-[clamp(3.5rem,11vw,10rem)] font-semibold leading-[0.84] tracking-[-0.07em] text-white">
+            Georeferencia<br />subterranea<br />real
+          </h1>
+          <p data-reveal-hero className="mt-6 max-w-sm text-base leading-7 text-white/70 md:mt-8 md:text-lg md:leading-8" style={{ fontFamily: "var(--font-dm-sans)" }}>
+            Geolocalizacion en tiempo real para mineria subterranea, donde el GPS no existe.
+          </p>
+          <div data-reveal-hero className="mt-8 flex flex-wrap justify-end gap-4 md:justify-start md:mt-10 md:gap-4">
+            <Link href="/login" className="rounded-full border border-subtech-blue bg-subtech-dark-blue px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:bg-subtech-blue md:px-7 md:py-4">
+              entrar al sistema
+            </Link>
+            <a href="#plataforma" className="rounded-full border border-subtech-yellow/35 px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-subtech-yellow transition hover:-translate-y-0.5 hover:bg-subtech-yellow/10 md:px-7 md:py-4">
+              agenda una reunión
+            </a>
+          </div>
+
+          <div data-reveal-hero className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 text-right md:block">
+            <div className="mb-8">
+              <p className="text-6xl font-semibold tracking-[-0.05em]">24/7</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/45">operación continua</p>
+            </div>
+            <div className="mb-8">
+              <p className="text-6xl font-semibold tracking-[-0.05em]">30</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/45">activos monitoreados</p>
+            </div>
+            <div>
+              <p className="text-6xl font-semibold tracking-[-0.05em]">+1.700m</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/45">profundidad operativa</p>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Logo + tagline */}
-        <div className="animate-scale-in relative z-10 flex flex-col items-center gap-10 px-12 opacity-0">
-          <Image
-            src="/SS_LOGO_WHITE_H.png"
-            alt="Subtech Solutions"
-            width={380}
-            height={120}
-            priority
-            className="drop-shadow-2xl"
+      <section id="problema" className="bg-[#f4f8fb] px-4 py-20 text-[#0a1628] md:px-10 lg:py-24">
+        <div className="mx-auto max-w-[1280px]">
+          <div data-reveal className="mx-auto max-w-3xl text-center">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-subtech-blue">
+              La realidad subterránea
+            </p>
+            <h2 className="text-4xl font-bold leading-[1.04] tracking-[-0.04em] md:text-5xl">
+              El problema de no tener visibilidad.
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600" style={{ fontFamily: "var(--font-dm-sans)" }}>
+              Estos son dolores diarios en interior mina: tiempo perdido, incertidumbre operacional y responsabilidad sin datos confiables.
+            </p>
+          </div>
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {painPoints.map((point) => (
+              <PainPointCard key={point.title} point={point} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="tecnologia" className="border-y border-subtech-blue/10 bg-[#07101f]/80 px-4 py-24 md:px-10 lg:py-32">
+        <div className="mx-auto max-w-[1180px]">
+          <SectionTitle
+            eyebrow="Capacidades del sistema"
+            title="Tecnologia que funciona donde otros no llegan"
+            lead="Infraestructura de red propia, porticos TAG robustos y plataforma web para visualizar activos en tiempo real bajo tierra."
           />
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-px w-16 bg-subtech-light-blue/30" />
-            <p
-              className="text-center text-base tracking-[0.25em] font-medium uppercase"
-              style={{ color: "rgba(182, 226, 255, 0.6)", fontFamily: "var(--font-dm-sans)" }}
-            >
-              Plataforma de monitoreo
+          <div className="mt-12 grid overflow-hidden rounded-2xl border border-subtech-blue/10 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => (
+              <article key={feature.number} data-reveal className="group border-b border-r border-subtech-blue/10 bg-[#070d1a] p-7 transition hover:bg-subtech-dark-blue/15">
+                <p className="text-5xl font-bold tracking-[-0.06em] text-subtech-blue/10 transition group-hover:text-subtech-blue/20">{feature.number}</p>
+                <h3 className="mt-6 text-lg font-semibold text-white">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-subtech-light-blue/55" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                  {feature.body}
+                </p>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-subtech-yellow">{feature.accent}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="red" className="mx-auto max-w-[1180px] px-4 py-24 md:px-10 lg:py-32">
+        <SectionTitle
+          eyebrow="Infraestructura de red · Interior mina"
+          title="La red que hace posible el sistema"
+          lead="Instalación de red inalámbrica propia en el interior de la mina, diseñada para operar bajo tierra donde ninguna infraestructura estándar funciona. La conectividad que hace posible el monitoreo en tiempo real."
+        />
+        <div data-reveal className="mt-10 overflow-hidden rounded-xl border border-subtech-blue/15 bg-black shadow-[0_30px_70px_rgba(0,0,0,0.6)]">
+          <div className="relative flex min-h-[360px] items-end justify-between overflow-hidden bg-black p-6 md:min-h-[520px]">
+            <Image
+              src="/instalacion-wifi.jpg"
+              alt="Instalación de red Wi-Fi propietaria en interior mina"
+              fill
+              className="object-cover opacity-80"
+              sizes="(min-width: 1180px) 1180px, 100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
+            <p className="relative z-10 max-w-xs text-sm leading-6 text-white/80" style={{ fontFamily: "var(--font-dm-sans)" }}>
+              Instalación de red Wi-Fi propietaria en interior mina · Mina Don Jaime
+            </p>
+            <div className="relative z-10 flex items-center gap-2 rounded-xl border border-subtech-yellow/25 bg-subtech-yellow/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-subtech-yellow backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
+              instalación en faena
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          <div data-reveal className="group relative overflow-hidden rounded-2xl border border-subtech-yellow/15 bg-[linear-gradient(135deg,rgba(255,241,156,0.12),rgba(38,82,145,0.16)_38%,rgba(7,18,37,0.96))] p-7 transition duration-300 hover:-translate-y-1 hover:border-subtech-yellow/35 hover:shadow-[0_24px_70px_rgba(255,241,156,0.08)]">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-subtech-yellow/10 blur-3xl transition group-hover:bg-subtech-yellow/20" />
+            <div className="relative flex items-start justify-between gap-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-subtech-yellow/75">Arquitectura escalable</p>
+                <Image src="/icono-arquitectura.svg" alt="" width={88} height={88} className="mt-5 h-20 w-20 text-subtech-yellow" />
+              </div>
+              <div className="rounded-full border border-subtech-yellow/20 bg-black/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-subtech-yellow">
+                modular
+              </div>
+            </div>
+            <div className="relative mt-8 h-px bg-gradient-to-r from-subtech-yellow/45 via-subtech-blue/25 to-transparent" />
+            <p className="relative mt-5 text-sm leading-7 text-subtech-light-blue/72" style={{ fontFamily: "var(--font-dm-sans)" }}>
+              El sistema crece con la operación sin rediseñar la arquitectura base: más pórticos, más cobertura, misma lógica operacional.
+            </p>
+          </div>
+          <div data-reveal className="group relative overflow-hidden rounded-2xl border border-subtech-light-blue/15 bg-[linear-gradient(135deg,rgba(111,176,226,0.14),rgba(38,82,145,0.18)_42%,rgba(7,18,37,0.96))] p-7 transition duration-300 hover:-translate-y-1 hover:border-subtech-light-blue/35 hover:shadow-[0_24px_70px_rgba(111,176,226,0.1)]">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-subtech-light-blue/10 blur-3xl transition group-hover:bg-subtech-light-blue/20" />
+            <div className="relative flex items-start justify-between gap-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-subtech-light-blue/70">Red propietaria</p>
+                <Image src="/icono-wifi-red.svg" alt="" width={88} height={88} className="mt-5 h-20 w-20 text-subtech-light-blue" />
+              </div>
+              <div className="rounded-full border border-subtech-light-blue/20 bg-black/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-subtech-light-blue">
+                interior mina
+              </div>
+            </div>
+            <div className="relative mt-8 h-px bg-gradient-to-r from-subtech-light-blue/45 via-subtech-blue/25 to-transparent" />
+            <p className="relative mt-5 text-sm leading-7 text-subtech-light-blue/72" style={{ fontFamily: "var(--font-dm-sans)" }}>
+              Infraestructura de conectividad instalada y mantenida por Subtech para operar bajo tierra donde la red estándar no llega.
             </p>
           </div>
         </div>
+      </section>
 
-        {/* Bottom edge accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: "linear-gradient(90deg, #265291, #6FB0E2, #FFF19C, #6FB0E2, #265291)" }} />
-      </div>
+      <section id="plataforma" className="relative overflow-hidden px-4 py-24 md:px-10 lg:py-32">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_48%,rgba(111,176,226,0.18),transparent_34%)]" />
+        <div className="relative mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+          <div>
+            <SectionTitle
+              eyebrow="Plataforma en produccion"
+              title="El sistema que ya funciona hoy"
+              lead="No es un prototipo: es una plataforma con datos reales, porticos operativos e historial de movimiento para maquinaria, vehiculos y personal."
+            />
+            <div className="mt-8 grid gap-3 text-sm text-subtech-light-blue/65" style={{ fontFamily: "var(--font-dm-sans)" }}>
+              <div className="flex items-center gap-3 rounded-xl border border-subtech-blue/10 bg-subtech-blue/5 px-4 py-3">
+                <span className="h-2 w-2 rounded-full bg-subtech-yellow" />
+                Plano de mina con ubicación de activos en tiempo real.
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-subtech-blue/10 bg-subtech-blue/5 px-4 py-3">
+                <span className="h-2 w-2 rounded-full bg-subtech-light-blue" />
+                Historial de movimiento por pórticos, niveles y usuarios.
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-subtech-blue/10 bg-subtech-blue/5 px-4 py-3">
+                <span className="h-2 w-2 rounded-full bg-subtech-blue" />
+                Acceso web desde superficie para operación y gestión.
+              </div>
+            </div>
+          </div>
 
-      {/* Right panel — Login form */}
-      <div className="relative flex flex-1 items-center justify-center bg-subtech-ice px-6 py-12 lg:px-16">
-        {/* Subtle background pattern */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.4]"
-          style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, rgba(38,82,145,0.04) 1px, transparent 0)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-
-        <div className="relative z-10 w-full max-w-[400px]">
-          {/* Mobile logo */}
-          <div className="mb-10 flex justify-center lg:hidden">
+          <div data-reveal className="relative">
+            <div className="absolute inset-x-8 bottom-4 h-24 rounded-full bg-subtech-blue/25 blur-3xl" />
             <Image
-              src="/SS_LOGO_WHITE_H.png"
-              alt="Subtech Solutions"
-              width={240}
-              height={75}
-              priority
+              src="/mockup-web-1.png"
+              alt="Mockup de la plataforma web Subtech"
+              width={1027}
+              height={787}
+              className="relative z-10 w-full object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)]"
+              sizes="(min-width: 1024px) 58vw, 100vw"
             />
           </div>
+        </div>
+      </section>
 
-          {/* Header */}
-          <div className="animate-slide-up mb-10 opacity-0">
-            <h1 className="text-[1.75rem] font-bold leading-tight tracking-tight text-subtech-dark-blue">
-              Bienvenido
-            </h1>
-            <p className="mt-2 text-[0.94rem] text-subtech-dark-blue/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
-              Ingresa tus credenciales para continuar
-            </p>
-          </div>
+      <section className="mx-auto max-w-[1180px] px-4 py-24 md:px-10 lg:py-32">
+        <SectionTitle eyebrow="Validacion de mercado" title="Lo dice quien opera la mina" />
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {testimonials.map((testimonial) => (
+            <article key={testimonial.author} data-reveal className="rounded-2xl border border-subtech-blue/10 bg-[#070d1a] p-7">
+              <p className="text-base italic leading-8 text-subtech-light-blue/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                &quot;{testimonial.quote}&quot;
+              </p>
+              <p className="mt-6 font-semibold text-white">{testimonial.author}</p>
+              <p className="mt-1 text-sm text-subtech-light-blue/45">{testimonial.role}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            {/* Email */}
-            <div className="animate-slide-up opacity-0 delay-100">
-              <label
-                htmlFor="email"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-subtech-dark-blue/60"
-              >
-                Correo electrónico
-              </label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtech-blue/50 transition-colors group-focus-within:text-subtech-dark-blue">
-                  <MailIcon />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="usuario@subtech.cl"
-                  required
-                  className="h-[52px] w-full rounded-xl border-2 border-subtech-light-blue/60 bg-white pl-11 pr-4 text-[0.94rem] text-subtech-dark-blue placeholder:text-subtech-dark-blue/65 transition-all duration-200 focus:border-subtech-dark-blue focus:shadow-[0_0_0_4px_rgba(38,82,145,0.08)]"
-                  style={{ fontFamily: "var(--font-dm-sans)" }}
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="animate-slide-up opacity-0 delay-200">
-              <label
-                htmlFor="password"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-subtech-dark-blue/60"
-              >
-                Contraseña
-              </label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtech-blue/50 transition-colors group-focus-within:text-subtech-dark-blue">
-                  <LockIcon />
-                </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="h-[52px] w-full rounded-xl border-2 border-subtech-light-blue/60 bg-white pl-11 pr-12 text-[0.94rem] text-subtech-dark-blue placeholder:text-subtech-dark-blue/65 transition-all duration-200 focus:border-subtech-dark-blue focus:shadow-[0_0_0_4px_rgba(38,82,145,0.08)]"
-                  style={{ fontFamily: "var(--font-dm-sans)" }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-subtech-blue/60 transition-colors hover:text-subtech-dark-blue"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                >
-                  <EyeIcon open={showPassword} />
-                </button>
-              </div>
-            </div>
-
-            {/* Remember + forgot */}
-            <div className="animate-slide-up flex items-center justify-between opacity-0 delay-300">
-              <label className="flex cursor-pointer items-center gap-2.5 select-none">
-                <div className="relative">
-                  <input type="checkbox" className="peer sr-only" />
-                  <div className="h-[18px] w-[18px] rounded-[5px] border-2 border-subtech-light-blue/70 bg-white transition-all peer-checked:border-subtech-dark-blue peer-checked:bg-subtech-dark-blue" />
-                  <svg
-                    className="absolute left-[3px] top-[3px] hidden h-3 w-3 text-white peer-checked:block"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M2 6l3 3 5-5" />
-                  </svg>
-                </div>
-                <span className="text-[0.82rem] text-subtech-dark-blue/70" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                  Recordarme
-                </span>
-              </label>
-              <button
-                type="button"
-                className="text-[0.82rem] font-medium text-subtech-dark-blue/70 transition-colors hover:text-subtech-dark-blue"
-                style={{ fontFamily: "var(--font-dm-sans)" }}
-              >
-                Olvidé mi contraseña
-              </button>
-            </div>
-
-            {/* Error message */}
-            {error && (
-              <div className="flex items-center gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                <span className="text-[0.85rem] text-red-700" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                  {error}
-                </span>
-              </div>
-            )}
-
-            {/* Submit */}
-            <div className="animate-slide-up pt-1 opacity-0 delay-400">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="btn-press group relative h-[52px] w-full cursor-pointer overflow-hidden rounded-xl bg-subtech-dark-blue font-semibold text-white shadow-lg shadow-subtech-dark-blue/20 transition-all duration-200 hover:shadow-xl hover:shadow-subtech-dark-blue/30 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {/* Yellow accent bar on hover */}
-                <div className="absolute bottom-0 left-0 h-[3px] w-0 bg-subtech-yellow transition-all duration-300 group-hover:w-full" />
-                {isLoading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    <span>Ingresando...</span>
-                  </div>
-                ) : (
-                  "Iniciar sesión"
-                )}
-              </button>
-            </div>
-          </form>
-
-          {/* Footer */}
-          <div className="animate-slide-up mt-12 opacity-0 delay-500">
-            <div className="h-px w-full bg-subtech-light-blue/40" />
-            <p className="mt-4 text-center text-[0.78rem] text-subtech-dark-blue/50" style={{ fontFamily: "var(--font-dm-sans)" }}>
-              Subtech Solutions &copy; {new Date().getFullYear()}
-            </p>
+      <section className="relative overflow-hidden px-4 py-28 text-center md:px-10 lg:py-36">
+        <Image
+          src="/INSP3.jpg"
+          alt="Interior mina Subtech"
+          fill
+          className="object-cover opacity-45"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(38,82,145,0.34),transparent_42%),linear-gradient(180deg,#020611_0%,rgba(2,6,17,0.55)_35%,rgba(2,6,17,0.62)_65%,#020611_100%)]" />
+        <div className="relative mx-auto max-w-3xl">
+          <p data-reveal className="mx-auto mb-7 w-fit rounded-xl border border-subtech-yellow/25 bg-subtech-yellow/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-subtech-yellow">
+            Sistema listo para operar
+          </p>
+          <h2 data-reveal className="text-5xl font-bold leading-[1.02] tracking-[-0.05em] text-white md:text-7xl">
+            El subsuelo chileno espera ser digitalizado
+          </h2>
+          <p data-reveal className="mx-auto mt-6 max-w-2xl text-base leading-8 text-subtech-light-blue/60" style={{ fontFamily: "var(--font-dm-sans)" }}>
+            Tecnologia validada, cliente real y modelo operacional probado para escalar la trazabilidad subterranea.
+          </p>
+          <div data-reveal className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link href="/login" className="rounded-full border border-subtech-blue bg-subtech-dark-blue px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-subtech-blue">
+              ir al login
+            </Link>
+            <a href="mailto:christian@subtechsolutions.cl" className="rounded-full border border-subtech-yellow/35 px-7 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-subtech-yellow transition hover:bg-subtech-yellow/10">
+              agendar reunion
+            </a>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      </ScrollReveal>
+
+      <footer className="border-t border-subtech-blue/10 bg-black/70 px-4 py-8 md:px-10">
+        <div className="mx-auto max-w-[1180px] text-center text-sm text-subtech-light-blue/45">
+          <p>Subtech Solutions &copy; 2026</p>
+        </div>
+      </footer>
+    </main>
   );
 }

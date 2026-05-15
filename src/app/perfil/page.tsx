@@ -75,7 +75,7 @@ export default function PerfilPage() {
 
   useEffect(() => {
     if (!getToken()) {
-      router.replace("/");
+      router.replace("/login");
       return;
     }
     void loadProfile();

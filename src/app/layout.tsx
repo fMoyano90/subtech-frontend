@@ -15,8 +15,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Subtech Solutions",
-  description: "Plataforma de gestión Subtech Solutions",
+  title: "Subtech Solutions - Geolocalizacion subterranea",
+  description:
+    "Geolocalizacion en tiempo real para mineria subterranea donde el GPS no existe.",
 };
 
 export default function RootLayout({

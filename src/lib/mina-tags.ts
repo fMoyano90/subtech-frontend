@@ -79,12 +79,23 @@ export const CATEGORIES = [
 export const POLLING_INTERVAL_MS = 30_000;
 const DISPLAY_TIME_ZONE = "UTC";
 
+// Chile changed from UTC-3 to UTC-4 on April 4, 2026.
+// IoT devices still send timestamps with the old UTC-3 offset.
+// We add +1 hour to compensate for records after this date.
+const DST_CHANGE_TS = Date.UTC(2026, 3, 4, 4, 0, 0) / 1000; // ~2026-04-04 00:00 CLT (UTC-4) = 04:00 UTC
+
+function adjustTimestamp(ts: number): number {
+  if (ts >= DST_CHANGE_TS) return ts + 3_600;
+  return ts;
+}
+
 /* ═══════════════════════════════════════════
    Helpers
    ═══════════════════════════════════════════ */
 
 export function tsToDate(ts: number): Date {
-  return new Date(ts < 1e12 ? ts * 1000 : ts);
+  const adjusted = ts < 1e12 ? adjustTimestamp(ts) * 1000 : adjustTimestamp(ts / 1000) * 1000;
+  return new Date(adjusted);
 }
 
 const localDateFormatter = new Intl.DateTimeFormat("es-CL", {
