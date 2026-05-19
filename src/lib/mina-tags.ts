@@ -191,6 +191,15 @@ export interface RecorridoStep {
   ubicacion: string;
 }
 
+export interface EnrichedRecorridoStep extends RecorridoStep {
+  porticoName: string;
+  direction: {
+    label: string;
+    arrow: "↑" | "↓" | "→";
+  };
+  timeInSector: string;
+}
+
 export interface RecorridoResponse {
   etiqueta: string;
   date: string;
@@ -216,6 +225,92 @@ export async function fetchRecorrido(
 ): Promise<RecorridoResponse> {
   const params = new URLSearchParams({ etiqueta, date });
   return fetchWithAuth<RecorridoResponse>(`/mina-tags/recorrido?${params.toString()}`);
+}
+
+const PORTICO_NAME_MAP: Record<string, string> = {
+  "840": "Bocamina Cota 840",
+  "950": "Bocamina Cota 950",
+  cruce: "Cruce Polvorín",
+  inferior: "Niveles Inferiores",
+};
+
+function getPorticoDisplayName(portico: string): string {
+  const lower = portico.toLowerCase();
+  for (const [keyword, name] of Object.entries(PORTICO_NAME_MAP)) {
+    if (lower.includes(keyword)) return name;
+  }
+  return portico;
+}
+
+function formatDuration(seconds: number): string {
+  if (seconds < 60) return `${seconds} seg en sector`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  if (minutes < 60) {
+    return remainingSeconds > 0
+      ? `${minutes} min ${remainingSeconds} seg en sector`
+      : `${minutes} min en sector`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return remainingMinutes > 0
+    ? `${hours}h ${remainingMinutes}min en sector`
+    : `${hours}h en sector`;
+}
+
+export function enrichRecorridoSteps(steps: RecorridoStep[]): EnrichedRecorridoStep[] {
+  return steps.map((step, index) => {
+    const nextStep = steps[index + 1];
+    const timeInSector = nextStep
+      ? formatDuration(nextStep.timestap - step.timestap)
+      : "Último registro";
+
+    const currentLoc = step.ubicacion.toLowerCase();
+    const nextLoc = nextStep?.ubicacion.toLowerCase() ?? "";
+
+    let direction: { label: string; arrow: "↑" | "↓" | "→" };
+
+    const isCurrentExterior =
+      currentLoc.includes("exterior") || currentLoc.includes("mina exterior");
+    const isNextExterior =
+      nextLoc.includes("exterior") || nextLoc.includes("mina exterior");
+    const isCurrentInterior =
+      currentLoc.includes("nivel") && !isCurrentExterior;
+    const isNextInterior = nextLoc.includes("nivel") && !isNextExterior;
+
+    if (isCurrentExterior && isNextInterior) {
+      direction = { label: "Entrando a mina", arrow: "↓" };
+    } else if (isCurrentInterior && isNextExterior) {
+      direction = { label: "Saliendo de mina", arrow: "↑" };
+    } else if (isCurrentInterior && isNextInterior) {
+      const currentLevel = currentLoc.includes("superior")
+        ? 3
+        : currentLoc.includes("medio")
+          ? 2
+          : 1;
+      const nextLevel = nextLoc.includes("superior")
+        ? 3
+        : nextLoc.includes("medio")
+          ? 2
+          : 1;
+      if (nextLevel > currentLevel) {
+        direction = { label: "Subiendo por ramal", arrow: "↑" };
+      } else if (nextLevel < currentLevel) {
+        direction = { label: "Bajando por ramal", arrow: "↓" };
+      } else {
+        direction = { label: "Mismo nivel", arrow: "→" };
+      }
+    } else {
+      direction = { label: "En sector", arrow: "→" };
+    }
+
+    return {
+      ...step,
+      porticoName: getPorticoDisplayName(step.portico),
+      direction,
+      timeInSector,
+    };
+  });
 }
 
 /** Fetches a single page of mina tags (most recent first). */

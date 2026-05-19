@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type MinaTag, CATEGORIES, formatDate, formatTime, tsToDate, fetchEtiquetas, fetchRecorrido, type RecorridoStep } from "@/lib/mina-tags";
+import { type MinaTag, CATEGORIES, formatDate, formatTime, tsToDate, fetchEtiquetas, fetchRecorrido, type RecorridoStep, type EnrichedRecorridoStep, enrichRecorridoSteps } from "@/lib/mina-tags";
+import { getLocationPresentation } from "@/lib/location-status";
 
 interface PorticoSidebarProps {
   selected: string | null;
@@ -46,7 +47,7 @@ export function PorticoSidebar({
   const [showDropdown, setShowDropdown] = useState(false);
   const [recorridoLoading, setRecorridoLoading] = useState(false);
   const [recorridoError, setRecorridoError] = useState("");
-  const [recorridoData, setRecorridoData] = useState<{ steps: RecorridoStep[]; etiqueta: string; date: string } | null>(null);
+  const [recorridoData, setRecorridoData] = useState<{ steps: EnrichedRecorridoStep[]; etiqueta: string; date: string } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -82,9 +83,10 @@ export function PorticoSidebar({
     setRecorridoLoading(true);
     try {
       const result = await fetchRecorrido(recorridoSelected.etiqueta, recorridoDate);
-      const data = { steps: result.steps, etiqueta: result.etiqueta, date: result.date };
+      const enrichedSteps = enrichRecorridoSteps(result.steps);
+      const data = { steps: enrichedSteps, etiqueta: result.etiqueta, date: result.date };
       setRecorridoData(data);
-      onRecorridoChange(data);
+      onRecorridoChange({ steps: result.steps, etiqueta: result.etiqueta, date: result.date });
     } catch (e) {
       setRecorridoError(e instanceof Error ? e.message : "Error al obtener el recorrido");
       setRecorridoData(null);
@@ -381,7 +383,7 @@ export function PorticoSidebar({
               {/* Results */}
               {recorridoData ? (
                 <>
-                  <p className="mb-2 text-[0.68rem] font-semibold text-subtech-dark-blue/55">
+                  <p className="mb-3 text-[0.68rem] font-semibold text-subtech-dark-blue/55">
                     {recorridoData.steps.length} paso{recorridoData.steps.length !== 1 && "s"} — {recorridoData.etiqueta}
                   </p>
                   {recorridoData.steps.length === 0 ? (
@@ -394,37 +396,56 @@ export function PorticoSidebar({
                       </p>
                     </div>
                   ) : (
-                    <table className="w-full text-left text-[0.72rem]">
-                      <thead className="sticky top-0 bg-white">
-                        <tr className="border-b border-subtech-light-blue/30 text-[0.62rem] font-bold uppercase tracking-wider text-subtech-dark-blue/70">
-                          <th className="pb-1.5 pr-2">#</th>
-                          <th className="pb-1.5 pr-2">Pórtico</th>
-                          <th className="pb-1.5 pr-2">Hora</th>
-                          <th className="pb-1.5">Ubicación</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recorridoData.steps.map((step) => (
-                          <tr
+                    <div className="space-y-3">
+                      {recorridoData.steps.map((step) => {
+                        const locationPresentation = getLocationPresentation(step.ubicacion);
+                        return (
+                          <div
                             key={step.sequence}
-                            className="border-b border-subtech-ice/60 transition-colors hover:bg-subtech-ice/40"
+                            className="flex items-start gap-3 rounded-lg border border-subtech-light-blue/20 bg-white p-3 transition-colors hover:bg-subtech-ice/30"
                           >
-                            <td className="py-1.5 pr-2 font-bold text-subtech-dark-blue">
-                              {step.sequence}
-                            </td>
-                            <td className="py-1.5 pr-2 text-subtech-dark-blue/75">
-                              {step.portico}
-                            </td>
-                            <td className="py-1.5 pr-2 tabular-nums text-subtech-dark-blue/75">
-                              {formatTime(step.timestap)}
-                            </td>
-                            <td className="py-1.5 text-subtech-dark-blue/60">
-                              {step.ubicacion}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            {/* Blue dot indicator */}
+                            <div className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-subtech-dark-blue" />
+
+                            {/* Content */}
+                            <div className="flex-1 space-y-1.5">
+                              {/* Portico name and time */}
+                              <div className="flex items-baseline justify-between">
+                                <span className="text-[0.82rem] font-semibold text-subtech-dark-blue">
+                                  {step.porticoName}
+                                </span>
+                                <span className="text-[0.72rem] tabular-nums text-subtech-dark-blue/60">
+                                  {formatTime(step.timestap)}
+                                </span>
+                              </div>
+
+                              {/* Direction */}
+                              <div className="flex items-center gap-1.5 text-[0.75rem] text-subtech-dark-blue/70">
+                                <span className="text-[0.85rem]">{step.direction.arrow}</span>
+                                <span>{step.direction.label}</span>
+                              </div>
+
+                              {/* Location tag and time in sector */}
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className="inline-flex items-center rounded-md px-2 py-0.5 text-[0.65rem] font-medium"
+                                  style={{
+                                    color: locationPresentation.color,
+                                    backgroundColor: locationPresentation.background,
+                                    border: `1px solid ${locationPresentation.border}`,
+                                  }}
+                                >
+                                  {locationPresentation.label}
+                                </span>
+                                <span className="text-[0.68rem] text-subtech-dark-blue/50">
+                                  {step.timeInSector}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </>
               ) : (
