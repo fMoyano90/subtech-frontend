@@ -9,7 +9,9 @@ import type {
   PorticoStatusId,
   PorticoStatusItem,
   RecorridoStep,
+  EnrichedRecorridoStep,
 } from "@/lib/mina-tags";
+import { RecorridoAnimation } from "./recorrido-animation";
 
 export interface PorticoData {
   portico: string;
@@ -23,6 +25,11 @@ interface PorticoMapaProps {
   onSelect: (portico: string | null) => void;
   recorrido?: RecorridoStep[] | null;
   statusByPorticoId?: Partial<Record<PorticoStatusId, PorticoStatusItem>>;
+  enrichedSteps?: EnrichedRecorridoStep[] | null;
+  animationPlaying?: boolean;
+  animationStep?: number;
+  animationSpeed?: number;
+  onAnimationStepChange?: (step: number) => void;
 }
 
 /* ──────────────────────────────────────────────────────
@@ -122,6 +129,15 @@ const statusDateFormatter = new Intl.DateTimeFormat("es-CL", {
   hour12: false,
 });
 
+function keywordToPid(portico: string): string {
+  const l = portico.toLowerCase();
+  if (l.includes("840")) return "p840";
+  if (l.includes("cruce")) return "ppolv";
+  if (l.includes("950")) return "p950";
+  if (l.includes("inferior")) return "pinf";
+  return "p840";
+}
+
 function formatStatusDate(value?: string): string {
   if (!value) return "Sin señal registrada";
   const date = new Date(value);
@@ -167,7 +183,14 @@ export function PorticoMapa({
   onSelect,
   recorrido,
   statusByPorticoId,
+  enrichedSteps,
+  animationPlaying,
+  animationStep,
+  animationSpeed = 1,
+  onAnimationStepChange,
 }: PorticoMapaProps) {
+  const isAnimating = !!enrichedSteps && enrichedSteps.length > 0 && animationStep !== undefined;
+
   // Build per-node sequence lists using the same PORTICO_MAP keywords
   // seqByNodeIndex[i] = array of sequence numbers for node at POSITIONS[i]
   const seqByNodeIndex: (number[] | null)[] = PORTICO_MAP.map(({ keyword }) => {
@@ -180,6 +203,21 @@ export function PorticoMapa({
     }
     return seqs.length > 0 ? seqs : null;
   });
+
+  // For animation: determine which nodes are "visited" based on current animation step
+  const animatedVisitedPids = new Set<string>();
+  let animatedActivePid: string | null = null;
+  if (isAnimating && enrichedSteps) {
+    for (let i = 0; i <= animationStep && i < enrichedSteps.length; i++) {
+      const pid = keywordToPid(enrichedSteps[i].portico);
+      animatedVisitedPids.add(pid);
+    }
+    if (animationStep < enrichedSteps.length) {
+      animatedActivePid = keywordToPid(enrichedSteps[animationStep].portico);
+    } else if (enrichedSteps.length > 0) {
+      animatedActivePid = keywordToPid(enrichedSteps[enrichedSteps.length - 1].portico);
+    }
+  }
 
   // Match each position to its pórtico via keyword (case-insensitive substring)
   const nodes = POSITIONS.map((pos, i) => {
@@ -270,6 +308,17 @@ export function PorticoMapa({
             />
           ))}
 
+          {/* ── Animation layer ── */}
+          {isAnimating && enrichedSteps && (
+            <RecorridoAnimation
+              steps={enrichedSteps}
+              isPlaying={!!animationPlaying}
+              currentStep={animationStep}
+              speed={animationSpeed}
+              onStepComplete={onAnimationStepChange}
+            />
+          )}
+
           {/* ── Nodes ── */}
           {nodes.map(({ pos, data, id, fallback, nodeIndex }) => {
             const ncx = cx(pos);
@@ -282,13 +331,38 @@ export function PorticoMapa({
             const nodeSeq = seqByNodeIndex[nodeIndex] ?? null;
             const inRecorrido = !!nodeSeq && nodeSeq.length > 0;
 
-            const fillColor   = inRecorrido ? "#D4A700" : empty ? "#F4F7FC" : isActive ? "#265291" : "#FFFFFF";
-            const strokeColor = inRecorrido ? "#B8900A" : empty ? "#C8DDF2" : isActive ? "#265291" : "#265291";
-            const strokeW     = inRecorrido ? 2.5 : empty ? 1.5 : 2;
-            const dash        = empty && !inRecorrido ? "5 4" : undefined;
+            // Animation state overrides
+            const pid = id as string;
+            const isAnimVisited = animatedVisitedPids.has(pid);
+            const isAnimActive = animatedActivePid === pid;
 
-            const countColor  = inRecorrido ? "#FFFFFF" : isActive ? "#FFFFFF" : empty ? "rgba(38,82,145,0.30)" : "#265291";
-            const labelColor  = inRecorrido ? "rgba(255,255,255,0.85)" : isActive ? "rgba(255,255,255,0.80)" : empty ? "rgba(38,82,145,0.30)" : "rgba(38,82,145,0.65)";
+            const fillColor   = isAnimActive
+              ? "#265291"
+              : isAnimVisited
+                ? "#D4A700"
+                : inRecorrido
+                  ? "#D4A700"
+                  : empty
+                    ? "#F4F7FC"
+                    : isActive
+                      ? "#265291"
+                      : "#FFFFFF";
+            const strokeColor = isAnimActive
+              ? "#185FA5"
+              : isAnimVisited
+                ? "#B8900A"
+                : inRecorrido
+                  ? "#B8900A"
+                  : empty
+                    ? "#C8DDF2"
+                    : isActive
+                      ? "#265291"
+                      : "#265291";
+            const strokeW     = isAnimActive ? 3 : isAnimVisited || inRecorrido ? 2.5 : empty ? 1.5 : 2;
+            const dash        = empty && !inRecorrido && !isAnimVisited ? "5 4" : undefined;
+
+            const countColor  = isAnimActive || isAnimVisited || inRecorrido ? "#FFFFFF" : isActive ? "#FFFFFF" : empty ? "rgba(38,82,145,0.30)" : "#265291";
+            const labelColor  = isAnimActive || isAnimVisited || inRecorrido ? "rgba(255,255,255,0.85)" : isActive ? "rgba(255,255,255,0.80)" : empty ? "rgba(38,82,145,0.30)" : "rgba(38,82,145,0.65)";
 
             // Split sequence into up to 2 rows of 4, plus "+N" overflow
             const SEQ_PER_ROW = 4;
@@ -318,7 +392,7 @@ export function PorticoMapa({
               `Ultima señal: ${formatStatusDate(statusItem?.lastSeenAt)}`,
               `Ultima revision backend: ${statusItem?.checkedAt ? formatStatusDate(statusItem.checkedAt) : "No disponible"}`,
             ];
-            const tooltip = inRecorrido && nodeSeq
+            const tooltip = (isAnimVisited || inRecorrido) && nodeSeq
               ? [`Pasos por este pórtico: ${nodeSeq.join(", ")}`, ...statusTitle].join("\n")
               : statusTitle.join("\n");
 
@@ -336,7 +410,7 @@ export function PorticoMapa({
                 <title>{tooltip}</title>
 
                 {/* Drop shadow */}
-                {(!empty || inRecorrido) && (
+                {(!empty || inRecorrido || isAnimVisited) && (
                   <rect
                     x={pos.x + 2}
                     y={pos.y + 4}
@@ -392,7 +466,7 @@ export function PorticoMapa({
 
                 {/* Content: count (or sequence rows) + label */}
                 <>
-                  {inRecorrido ? (
+                  {(inRecorrido || isAnimVisited) ? (
                     /* Multi-row sequence display */
                     <text
                       textAnchor="middle"

@@ -11,6 +11,12 @@ interface PorticoSidebarProps {
   loadingMore?: boolean;
   onLoadMore?: () => void;
   onRecorridoChange: (recorrido: { steps: RecorridoStep[]; etiqueta: string; date: string } | null) => void;
+  animationPlaying?: boolean;
+  animationStep?: number;
+  animationSpeed?: number;
+  onPlayToggle?: () => void;
+  onStepJump?: (step: number) => void;
+  onSpeedChange?: (speed: number) => void;
 }
 
 type TabKey = "historial" | "recorrido";
@@ -22,6 +28,12 @@ export function PorticoSidebar({
   loadingMore = false,
   onLoadMore,
   onRecorridoChange,
+  animationPlaying = false,
+  animationStep = 0,
+  animationSpeed = 1,
+  onPlayToggle,
+  onStepJump,
+  onSpeedChange,
 }: PorticoSidebarProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("historial");
 
@@ -383,6 +395,66 @@ export function PorticoSidebar({
               {/* Results */}
               {recorridoData ? (
                 <>
+                  {/* Playback controls */}
+                  <div className="mb-3 rounded-lg border border-subtech-light-blue/20 bg-subtech-ice/30 p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <button
+                        onClick={onPlayToggle}
+                        disabled={recorridoData.steps.length === 0}
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
+                          animationPlaying
+                            ? "bg-subtech-dark-blue text-white hover:bg-subtech-dark-blue/80"
+                            : "border border-subtech-light-blue/50 text-subtech-dark-blue hover:bg-subtech-ice"
+                        } disabled:opacity-40`}
+                        title={animationPlaying ? "Pausar" : "Reproducir recorrido"}
+                      >
+                        {animationPlaying ? (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16" rx="1" />
+                            <rect x="14" y="4" width="4" height="16" rx="1" />
+                          </svg>
+                        ) : (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        )}
+                      </button>
+
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-1.5 rounded-full bg-subtech-light-blue/30">
+                            <div
+                              className="h-full rounded-full bg-subtech-dark-blue transition-all duration-300"
+                              style={{
+                                width: `${recorridoData.steps.length > 0 ? Math.round(((animationStep) / recorridoData.steps.length) * 100) : 0}%`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-[0.65rem] tabular-nums text-subtech-dark-blue/60">
+                            {animationStep}/{recorridoData.steps.length}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Speed toggle */}
+                      <button
+                        onClick={() => onSpeedChange?.(animationSpeed === 1 ? 2 : 1)}
+                        className="rounded-md px-1.5 py-0.5 text-[0.62rem] font-bold text-subtech-dark-blue/60 hover:bg-subtech-ice hover:text-subtech-dark-blue"
+                        title="Velocidad"
+                      >
+                        {animationSpeed}x
+                      </button>
+                    </div>
+
+                    <p className="text-[0.65rem] text-subtech-dark-blue/50">
+                      {animationPlaying
+                        ? "Reproduciendo recorrido..."
+                        : animationStep >= recorridoData.steps.length
+                          ? "Recorrido completado"
+                          : "Presiona play para ver el recorrido"}
+                    </p>
+                  </div>
+
                   <p className="mb-3 text-[0.68rem] font-semibold text-subtech-dark-blue/55">
                     {recorridoData.steps.length} paso{recorridoData.steps.length !== 1 && "s"} — {recorridoData.etiqueta}
                   </p>
@@ -396,22 +468,54 @@ export function PorticoSidebar({
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      {recorridoData.steps.map((step) => {
+                    <div className="space-y-0">
+                      {recorridoData.steps.map((step, idx) => {
                         const locationPresentation = getLocationPresentation(step.ubicacion);
+                        const isCompleted = idx < animationStep;
+                        const isCurrent = idx === animationStep;
+                        const timeInSector = step.timeInSector;
+
                         return (
-                          <div
+                          <button
                             key={step.sequence}
-                            className="flex items-start gap-3 rounded-lg border border-subtech-light-blue/20 bg-white p-3 transition-colors hover:bg-subtech-ice/30"
+                            onClick={() => onStepJump?.(idx)}
+                            className={`group flex w-full items-start gap-3 border-b border-subtech-light-blue/10 px-1 py-2.5 text-left transition-colors hover:bg-subtech-ice/30 ${
+                              isCurrent ? "bg-subtech-ice/50" : ""
+                            }`}
                           >
-                            {/* Blue dot indicator */}
-                            <div className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-subtech-dark-blue" />
+                            {/* Step indicator */}
+                            <div className="relative flex flex-col items-center pt-0.5">
+                              <div
+                                className={`h-2.5 w-2.5 shrink-0 rounded-full transition-all ${
+                                  isCompleted
+                                    ? "bg-subtech-dark-blue"
+                                    : isCurrent
+                                      ? "bg-subtech-dark-blue ring-2 ring-subtech-dark-blue/30"
+                                      : "border-2 border-subtech-light-blue/50 bg-white"
+                                }`}
+                              />
+                              {idx < recorridoData.steps.length - 1 && (
+                                <div
+                                  className={`mt-1 h-4 w-0.5 shrink-0 ${
+                                    isCompleted ? "bg-subtech-dark-blue/40" : "bg-subtech-light-blue/30"
+                                  }`}
+                                />
+                              )}
+                            </div>
 
                             {/* Content */}
                             <div className="flex-1 space-y-1.5">
                               {/* Portico name and time */}
                               <div className="flex items-baseline justify-between">
-                                <span className="text-[0.82rem] font-semibold text-subtech-dark-blue">
+                                <span
+                                  className={`text-[0.82rem] font-semibold transition-colors ${
+                                    isCurrent
+                                      ? "text-subtech-dark-blue"
+                                      : isCompleted
+                                        ? "text-subtech-dark-blue/80"
+                                        : "text-subtech-dark-blue/60"
+                                  }`}
+                                >
                                   {step.porticoName}
                                 </span>
                                 <span className="text-[0.72rem] tabular-nums text-subtech-dark-blue/60">
@@ -438,11 +542,11 @@ export function PorticoSidebar({
                                   {locationPresentation.label}
                                 </span>
                                 <span className="text-[0.68rem] text-subtech-dark-blue/50">
-                                  {step.timeInSector}
+                                  {timeInSector}
                                 </span>
                               </div>
                             </div>
-                          </div>
+                          </button>
                         );
                       })}
                     </div>

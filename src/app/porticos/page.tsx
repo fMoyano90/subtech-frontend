@@ -17,9 +17,11 @@ import {
   type PorticoStatusId,
   type PorticoStatusItem,
   type RecorridoStep,
+  type EnrichedRecorridoStep,
   POLLING_INTERVAL_MS,
   fetchMinaTagsPage,
   fetchPorticoStatuses,
+  enrichRecorridoSteps,
 } from "@/lib/mina-tags";
 
 export default function PorticosPage() {
@@ -29,6 +31,10 @@ export default function PorticosPage() {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const [recorridoData, setRecorridoData] = useState<{ steps: RecorridoStep[]; etiqueta: string; date: string } | null>(null);
+  const [enrichedSteps, setEnrichedSteps] = useState<EnrichedRecorridoStep[]>([]);
+  const [animationPlaying, setAnimationPlaying] = useState(false);
+  const [animationStep, setAnimationStep] = useState(0);
+  const [animationSpeed, setAnimationSpeed] = useState(1);
   const [nextCursor, setNextCursor] = useState<string | undefined>(undefined);
   const [loadingMore, setLoadingMore] = useState(false);
   const [porticoStatuses, setPorticoStatuses] = useState<PorticoStatusItem[]>([]);
@@ -148,6 +154,46 @@ export default function PorticosPage() {
     ) as Partial<Record<PorticoStatusId, PorticoStatusItem>>;
   }, [porticoStatuses]);
 
+  /* ── Animation controls ── */
+  const handleRecorridoChange = useCallback((data: { steps: RecorridoStep[]; etiqueta: string; date: string } | null) => {
+    setRecorridoData(data);
+    if (data) {
+      setEnrichedSteps(enrichRecorridoSteps(data.steps));
+      setAnimationStep(0);
+      setAnimationPlaying(false);
+    } else {
+      setEnrichedSteps([]);
+      setAnimationStep(0);
+      setAnimationPlaying(false);
+    }
+  }, []);
+
+  const handlePlayToggle = useCallback(() => {
+    if (!recorridoData || enrichedSteps.length === 0) return;
+    if (animationStep >= enrichedSteps.length) {
+      setAnimationStep(0);
+    }
+    setAnimationPlaying((p) => !p);
+  }, [recorridoData, enrichedSteps.length, animationStep]);
+
+  const handleAnimationStepChange = useCallback((step: number) => {
+    if (step >= enrichedSteps.length) {
+      setAnimationStep(enrichedSteps.length);
+      setAnimationPlaying(false);
+    } else {
+      setAnimationStep(step);
+    }
+  }, [enrichedSteps.length]);
+
+  const handleStepJump = useCallback((step: number) => {
+    setAnimationStep(step);
+    setAnimationPlaying(false);
+  }, []);
+
+  const handleSpeedChange = useCallback((speed: number) => {
+    setAnimationSpeed(speed);
+  }, []);
+
   /* ── Stats bar values ── */
   const totalCurrent = porticoNodes.reduce((s, n) => s + n.currentCount, 0);
   const totalPorticos = porticoNodes.length;
@@ -214,9 +260,18 @@ export default function PorticosPage() {
                       Recorrido: <span className="font-bold">{recorridoData.etiqueta}</span>
                       {" · "}{recorridoData.date}
                       {" · "}{recorridoData.steps.length} {recorridoData.steps.length === 1 ? "paso" : "pasos"}
+                      {animationPlaying && (
+                        <span className="ml-2 inline-flex items-center gap-1 text-[0.72rem] text-subtech-dark-blue/70">
+                          <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-subtech-dark-blue" />
+                          Reproduciendo
+                        </span>
+                      )}
+                      {animationStep >= recorridoData.steps.length && recorridoData.steps.length > 0 && (
+                        <span className="ml-2 text-[0.72rem] text-green-600">Completado</span>
+                      )}
                     </span>
                     <button
-                      onClick={() => setRecorridoData(null)}
+                      onClick={() => handleRecorridoChange(null)}
                       className="text-[0.72rem] font-semibold text-subtech-dark-blue/60 hover:text-subtech-dark-blue"
                     >
                       Limpiar
@@ -244,6 +299,11 @@ export default function PorticosPage() {
                     selected={selected}
                     onSelect={setSelected}
                     recorrido={recorridoData?.steps ?? null}
+                    enrichedSteps={enrichedSteps}
+                    animationPlaying={animationPlaying}
+                    animationStep={animationStep}
+                    animationSpeed={animationSpeed}
+                    onAnimationStepChange={handleAnimationStepChange}
                     statusByPorticoId={statusByPorticoId}
                   />
                 </div>
@@ -259,7 +319,13 @@ export default function PorticosPage() {
           hasMore={!!nextCursor}
           loadingMore={loadingMore}
           onLoadMore={() => void handleLoadMore()}
-          onRecorridoChange={setRecorridoData}
+          onRecorridoChange={handleRecorridoChange}
+          animationPlaying={animationPlaying}
+          animationStep={animationStep}
+          animationSpeed={animationSpeed}
+          onPlayToggle={handlePlayToggle}
+          onStepJump={handleStepJump}
+          onSpeedChange={handleSpeedChange}
         />
       </div>
     </div>
