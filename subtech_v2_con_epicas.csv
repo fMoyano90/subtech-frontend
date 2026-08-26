@@ -1,0 +1,581 @@
+﻿Issue Type,Summary,Description,Epic Name,Epic Link,Priority,Story Points,Labels
+Epic,Constitucion y formalizacion legal,"Incorporacion de socios Felipe y Andres a la SpA existente. Incluye reforma de estatutos, pacto de accionistas, tramites ante notaria, Registro de Comercio, SII y banco. Estructura acordada: 55/25/20.",SUB-LEGAL,,Highest,,legal;fundacional
+Epic,Presencia digital y marketing,"Rediseno y ampliacion del sitio subtechsolutions.cl. Reposicionamiento de mensaje desde RFID hacia soluciones integrales de conectividad, ubicacion y seguridad en mineria subterranea.",SUB-WEB,,High,,marketing;web
+Epic,Producto y software,"Evolucion de la plataforma de visualizacion. Incluye rediseno UI, nuevas funcionalidades y arquitectura multi-tenant como habilitador de escalabilidad comercial.",SUB-SW,,High,,producto;software
+Epic,Ejecucion proyectos La Patagua,Planificacion y ejecucion de los dos proyectos adjudicados: 8 puntos de red en accesos subterraneos y sistema de alerta ante incidentes con dispositivos AXIS D4100-VE Mk II en 7 niveles.,SUB-OPS,,Highest,,operaciones;cliente-patagua
+Epic,Financiamiento y expansion,"Busqueda de fondos concursables (CORFO, ANID, Start-Up Chile, SERCOTEC) y expansion comercial hacia una segunda mina, priorizando las otras 3 operaciones de la compania La Patagua.",SUB-FIN,,High,,financiamiento;comercial
+Story,L1 Descargar y revisar estatutos vigentes,"Descargar los estatutos vigentes desde registrodeempresasysociedades.cl y verificar el estado societario actual antes de iniciar cualquier tramite de modificacion.
+
+Contexto: la empresa fue constituida via Empresa en un Dia con estatutos tipo, que son minimalistas y se remiten supletoriamente a la Ley 20.190 (SpA) y en lo no previsto a la Ley 18.046.
+
+Puntos a verificar:
+- Capital suscrito y capital efectivamente pagado
+- Numero total de acciones emitidas y su valor
+- Objeto social y si cubre las nuevas lineas de negocio (conectividad y sistemas de seguridad)
+- Ausencia o presencia de clausulas de transferencia de acciones
+- Quorums de decision definidos
+
+Criterios de aceptacion:
+- Estatutos vigentes descargados y archivados en repositorio compartido
+- Capital suscrito y pagado documentado
+- Confirmado si el objeto social requiere ampliacion
+- Resumen de una pagina con hallazgos compartido con los 3 socios",,Constitucion y formalizacion legal,Highest,1,legal;bloqueante
+Story,L2 Definir mecanismo de entrada de socios,"Decidir entre aumento de capital con emision de acciones nuevas versus cesion de acciones existentes del socio mayoritario.
+
+Recomendacion preliminar: aumento de capital. Con este mecanismo los socios entrantes suscriben acciones nuevas y el dinero ingresa a la sociedad. Con cesion, el pago va al patrimonio personal del socio cedente y genera hecho tributario para el.
+
+Requiere validacion con contador dado el impacto tributario.
+
+Criterios de aceptacion:
+- Mecanismo definido y documentado por escrito
+- Validacion tributaria del contador obtenida
+- Impacto en capital social calculado
+- Los 3 socios informados de la decision y sus implicancias",,Constitucion y formalizacion legal,Highest,2,legal;bloqueante;tributario
+Story,L3 Formalizar distribucion accionaria 55/25/20,"Dejar por escrito la distribucion acordada y su valorizacion antes de pasar a redaccion legal.
+
+Distribucion acordada:
+- Socio mayoritario: 55 por ciento
+- Felipe: 25 por ciento
+- Andres: 20 por ciento
+
+Nota relevante: con 55 por ciento se controlan las decisiones ordinarias por mayoria simple, pero NO las que requieren mayoria reforzada (reforma de estatutos, aumentos de capital, transformacion, fusion, disolucion). Felipe y Andres suman 45 por ciento y pueden bloquear esas materias. Esto debe abordarse en L5.
+
+Criterios de aceptacion:
+- Documento firmado por los 3 con la distribucion
+- Valorizacion de la accion definida
+- Monto a pagar por cada socio entrante definido, si aplica
+- Plazo de pago acordado",,Constitucion y formalizacion legal,Highest,1,legal
+Story,L4 Documentar aportes comprometidos por socio,"Definir por escrito que aporta concretamente cada socio a cambio de su participacion. Esta es la tarea que despues sustenta el vesting y da mecanismo de accion si alguien no cumple.
+
+Dimensiones a cubrir por cada socio:
+- Aporte de capital, monto y plazo
+- Dedicacion horaria semanal comprometida y si es exclusiva
+- Rol y responsabilidades funcionales
+- Aportes intangibles: cartera de contactos, know-how tecnico, relaciones comerciales
+- Aportes en especie si los hubiera
+
+Antecedente a considerar: el socio mayoritario aporta dos anos de trabajo previo, el prototipo, la investigacion de tesis, la relacion comercial con La Patagua y el capital inicial. Los aportes de los socios entrantes deben quedar explicitos para que la distribucion tenga fundamento.
+
+Criterios de aceptacion:
+- Documento con aporte detallado de cada uno de los 3 socios
+- Dedicacion horaria minima cuantificada
+- Roles y responsabilidades definidos sin superposicion
+- Documento revisado y firmado por los 3",,Constitucion y formalizacion legal,Highest,2,legal;critico
+Story,L5 Definir contenido de pacto y reforma de estatutos,"Definir que materias se incorporan a los estatutos y cuales quedan en pacto de accionistas separado, antes de encargar la redaccion al abogado.
+
+Distincion clave: lo que va en estatutos es publico y oponible a terceros. Lo que va en pacto separado es privado y solo obliga entre las partes.
+
+Sugerido para ESTATUTOS:
+- Restriccion a la transferencia de acciones con derecho preferente de compra
+- Quorums reforzados para materias especificas
+- Ampliacion del objeto social a conectividad y sistemas de seguridad
+
+Sugerido para PACTO DE ACCIONISTAS:
+- Vesting: 3 a 4 anos con cliff de 12 meses para socios entrantes
+- Dedicacion minima exigible
+- No competencia y confidencialidad
+- Formula de valorizacion para salida de socio
+- Drag along y tag along
+- Resolucion de conflictos por arbitraje
+
+Nota sobre urgencia: los estatutos tipo de Empresa en un Dia no contienen restriccion a la transferencia. Sin ella, cualquier socio puede vender su participacion a un tercero sin ofrecerla primero. Conviene reformar los estatutos en la MISMA escritura de incorporacion de socios, porque hacerlo despues requiere el consentimiento de quienes ya tendran 45 por ciento.
+
+Criterios de aceptacion:
+- Lista definida de materias que van a estatutos
+- Lista definida de materias que van a pacto
+- Parametros de vesting acordados por los 3
+- Quorums reforzados especificados por materia
+- Documento de instrucciones listo para entregar al abogado",,Constitucion y formalizacion legal,Highest,3,legal;critico;bloqueante
+Story,L6 Redaccion de reforma de estatutos y pacto,"Encargar a abogado la redaccion de la reforma de estatutos y el pacto de accionistas, en base al documento de instrucciones generado en L5.
+
+Presupuesto referencial: entre 400.000 y 800.000 pesos segun complejidad.
+
+Criterios de aceptacion:
+- Abogado seleccionado y honorarios acordados
+- Borrador de reforma de estatutos recibido
+- Borrador de pacto de accionistas recibido
+- Ambos documentos revisados por los 3 socios
+- Observaciones incorporadas y version final aprobada",,Constitucion y formalizacion legal,Highest,5,legal
+Story,L7 Junta extraordinaria y escritura en notaria,"Celebrar junta extraordinaria de accionistas y otorgar escritura publica de modificacion que incorpore socios y reforme estatutos en un solo acto.
+
+Criterios de aceptacion:
+- Junta extraordinaria celebrada y acta levantada
+- Escritura publica de modificacion otorgada ante notario
+- Copia autorizada de la escritura obtenida
+- Pacto de accionistas firmado por los 3",,Constitucion y formalizacion legal,Highest,3,legal;dependencia-externa
+Story,L8 Inscripcion en Registro de Comercio y Diario Oficial,"Inscribir el extracto de la escritura de modificacion en el Registro de Comercio del Conservador de Bienes Raices y publicarlo en el Diario Oficial dentro del plazo legal de 30 dias desde la fecha de la escritura.
+
+Criterios de aceptacion:
+- Extracto inscrito en Registro de Comercio
+- Publicacion en Diario Oficial realizada dentro de plazo
+- Certificado de vigencia actualizado obtenido
+- Documentacion archivada en repositorio compartido",,Constitucion y formalizacion legal,Highest,5,legal;dependencia-externa
+Task,L9 Actualizar composicion societaria en SII,"Informar la modificacion societaria al Servicio de Impuestos Internos y actualizar la composicion de socios en el sistema.
+
+Criterios de aceptacion:
+- Modificacion informada al SII
+- Composicion societaria actualizada y verificada en el portal
+- Representantes legales actualizados si corresponde",,Constitucion y formalizacion legal,Medium,2,legal;tributario
+Task,L10 Actualizar apoderados en cuenta corriente,"Actualizar la nomina de apoderados y los poderes bancarios en la cuenta corriente de la empresa conforme a la nueva estructura societaria.
+
+Definir tambien el esquema de firmas: individual, conjunta, o por monto.
+
+Criterios de aceptacion:
+- Nueva escritura y certificado de vigencia presentados al banco
+- Apoderados actualizados
+- Esquema de firmas definido y operativo
+- Accesos digitales configurados para quienes corresponda",,Constitucion y formalizacion legal,Medium,2,legal;administracion
+Story,L11 Cesion de propiedad intelectual a la sociedad,"Formalizar la transferencia a la sociedad de toda la propiedad intelectual que actualmente pueda estar a nombre personal del socio fundador.
+
+Contexto: el proyecto nacio como investigacion de tesis personal. Si el software, el diseno de los porticos, la documentacion tecnica o el know how estan a titulo personal y no de la sociedad, cualquier fondo concursable o due diligence futuro lo levantara como observacion.
+
+Alcance a cubrir:
+- Codigo fuente del software de visualizacion
+- Disenos y esquematicos de los porticos TAG
+- Documentacion tecnica y de arquitectura
+- Metodologia de segmentacion por macroniveles
+- Material de la investigacion de tesis aplicable comercialmente
+
+Verificar tambien si la universidad tiene alguna pretension sobre la PI derivada de la tesis.
+
+Criterios de aceptacion:
+- Inventario completo de activos de PI levantado
+- Situacion frente a la universidad verificada
+- Contrato de cesion de PI redactado y firmado
+- Repositorios de codigo migrados a cuenta corporativa",,Constitucion y formalizacion legal,Highest,2,legal;propiedad-intelectual;critico
+Story,L12 Registro de marca Subtech Solutions en INAPI,"Registrar la marca comercial ante el Instituto Nacional de Propiedad Industrial.
+
+Clases sugeridas:
+- Clase 9: aparatos e instrumentos, software, dispositivos de senalizacion
+- Clase 42: servicios cientificos y tecnologicos, diseno y desarrollo de software
+- Clase 45: servicios de seguridad para la proteccion de bienes y personas
+
+Criterios de aceptacion:
+- Busqueda de antecedentes realizada en INAPI
+- Clases definitivas definidas
+- Solicitud presentada y tasas pagadas
+- Numero de solicitud registrado y en seguimiento",,Constitucion y formalizacion legal,Medium,5,legal;marca
+Story,W1 Auditoria del sitio web actual,"Auditar subtechsolutions.cl para levantar linea base antes del rediseno.
+
+Dimensiones a evaluar:
+- Estructura de navegacion y arquitectura de informacion
+- Rendimiento y tiempos de carga
+- Comportamiento responsive en movil
+- SEO tecnico basico: titulos, meta descripciones, encabezados
+- Calidad y actualidad del contenido
+- Presencia o ausencia de llamados a la accion
+
+Criterios de aceptacion:
+- Informe de auditoria con hallazgos priorizados
+- Inventario de contenido existente que se conserva, actualiza o elimina
+- Plataforma y stack tecnico actual identificados
+- Accesos de administracion verificados y en poder del equipo",,Presencia digital y marketing,High,1,web;marketing
+Story,W2 Definir propuesta de valor y mensaje central,"Redefinir el posicionamiento de la empresa. El mensaje actual esta centrado en RFID, cuando la cartera real ya abarca tres lineas: ubicacion, conectividad y seguridad.
+
+Antecedente estrategico: la presentacion a ejecutivos de La Patagua para ampliar porticos fue rechazada con el argumento de que la tecnologia es excesiva para su escala y esta pensada para gran mineria. Simultaneamente aprobaron dos proyectos de comunicacion y seguridad. Ese contraste es informacion valiosa sobre como el mercado objetivo percibe el valor.
+
+A definir:
+- Frase de posicionamiento principal
+- Tres lineas de negocio con descripcion de una linea cada una
+- Segmento objetivo: mediana mineria subterranea
+- Diferenciadores frente a proveedores de gran mineria
+- Lenguaje orientado a resultados del cliente: tiempos de evacuacion, cumplimiento normativo, respuesta ante emergencias
+
+Criterios de aceptacion:
+- Documento de posicionamiento aprobado por los 3 socios
+- Tres lineas de negocio definidas y nombradas
+- Mensajes clave redactados para uso en web, propuestas y pitch",,Presencia digital y marketing,High,2,marketing;estrategia
+Story,W3 Seccion Cartera de proyectos,"Crear seccion de portafolio con fichas de los cuatro proyectos ejecutados y adjudicados.
+
+Proyecto 1 - Control de acceso: dos porticos TAG en dos bocaminas de Mina Don Jaime.
+Proyecto 2 - Segmentacion subterranea: dos porticos TAG en interior mina a 400 y 1400 metros, habilitando tres macroniveles de ubicacion.
+Proyecto 3 - Conectividad subterranea: 8 puntos de red en accesos a niveles subterraneos. Adjudicado.
+Proyecto 4 - Sistema de alerta ante incidentes: dispositivos AXIS D4100-VE Mk II en 7 niveles. Adjudicado.
+
+Cada ficha debe incluir desafio, solucion, tecnologia y resultado.
+
+Criterios de aceptacion:
+- Cuatro fichas redactadas y publicadas
+- Fotografia asociada a cada proyecto
+- Autorizacion de La Patagua obtenida (depende de W6)
+- Seccion navegable desde el menu principal",,Presencia digital y marketing,High,3,web;contenido
+Story,W4 Levantamiento de material grafico en terreno,"Sesion de fotografia y video en Mina Don Jaime para alimentar la web, el caso de estudio y el pitch deck.
+
+Tomas requeridas:
+- Porticos TAG instalados en bocamina
+- Porticos de interior mina
+- Infraestructura de red instalada
+- Equipo trabajando en terreno con EPP
+- Maquinaria y camionetas con TAG instalado
+- Capturas de pantalla del software en uso
+
+Coordinar con La Patagua las autorizaciones de ingreso, filmacion y uso de imagenes.
+
+Criterios de aceptacion:
+- Autorizacion de ingreso y filmacion gestionada
+- Material capturado y respaldado
+- Seleccion editada y optimizada para web
+- Verificado que ninguna imagen exponga informacion sensible del cliente",,Presencia digital y marketing,High,2,web;contenido;terreno
+Story,W5 Testimonios de contrapartes de La Patagua,"Gestionar, grabar y editar testimonios de tres contrapartes clave.
+
+Contrapartes:
+- Jefe de Mina
+- Jefe de Ingenieria y Proyectos
+- Gerente General
+
+Preparar pauta de preguntas orientada a resultados concretos y no a elogios genericos. Ofrecer alternativa escrita para quienes no quieran aparecer en video.
+
+Depende de W6.
+
+Criterios de aceptacion:
+- Autorizacion corporativa obtenida
+- Pauta de preguntas validada
+- Tres testimonios registrados en video o texto
+- Aprobacion de cada persona sobre la version final
+- Testimonios publicados en el sitio",,Presencia digital y marketing,Medium,5,web;contenido;cliente-patagua
+Story,W6 Autorizacion formal de La Patagua para uso comercial,"Obtener autorizacion escrita de la compania minera La Patagua para el uso comercial de la relacion contractual con fines de marketing.
+
+Debe cubrir:
+- Uso del nombre y logo de la compania
+- Mencion de Mina Don Jaime como caso de referencia
+- Publicacion de fotografias tomadas en sus instalaciones
+- Testimonios de personal en cargos de jefatura y gerencia
+- Publicacion de metricas del proyecto
+
+Verificar previamente si el contrato vigente contiene clausulas de confidencialidad que limiten la divulgacion.
+
+Bloqueante de W3, W4, W5 y W10.
+
+Criterios de aceptacion:
+- Contrato vigente revisado en materia de confidencialidad
+- Solicitud formal enviada a la contraparte
+- Autorizacion escrita obtenida con alcance definido
+- Alcance de lo autorizado documentado y comunicado al equipo",,Presencia digital y marketing,Highest,3,web;legal;bloqueante;cliente-patagua
+Story,W7 Seccion de metricas y resultados,"Publicar los indicadores duros del proyecto como respaldo cuantitativo de la capacidad de la empresa.
+
+Metricas disponibles:
+- 4 porticos TAG instalados y operativos
+- 3 macroniveles de segmentacion habilitados
+- 17 personas monitoreadas
+- 9 activos de maquinaria pesada monitoreados
+- 4 camionetas monitoreadas
+- 12 licencias de software vendidas
+- 2 anos de operacion continua
+- 8 puntos de red en ejecucion
+- 7 niveles con sistema de alerta en ejecucion
+
+Verificar contra W6 cuales metricas estan autorizadas para publicacion.
+
+Criterios de aceptacion:
+- Metricas verificadas y validadas internamente
+- Publicacion autorizada por el cliente
+- Seccion visual publicada en el sitio
+- Metricas replicadas en el pitch deck",,Presencia digital y marketing,High,1,web;contenido
+Story,W8 Seccion de servicios por linea de negocio,"Reestructurar la oferta de servicios en las tres lineas definidas en W2.
+
+Linea 1 - Ubicacion y trazabilidad: porticos TAG, control de acceso, segmentacion por niveles, monitoreo de personal y activos.
+Linea 2 - Conectividad subterranea: diseno e instalacion de redes en interior mina, puntos de red, infraestructura de comunicaciones.
+Linea 3 - Seguridad y emergencias: sistemas de alerta ante incidentes, protocolos de evacuacion, dispositivos de senalizacion.
+
+Criterios de aceptacion:
+- Tres secciones de servicio publicadas
+- Cada una con descripcion, alcance y tecnologias asociadas
+- Llamado a la accion en cada seccion
+- Coherencia verificada con el posicionamiento de W2",,Presencia digital y marketing,High,2,web;contenido
+Task,W9 Formulario de contacto y correo corporativo,"Implementar formulario de contacto funcional e integrarlo con correo corporativo del dominio.
+
+Criterios de aceptacion:
+- Formulario implementado con validacion y proteccion antispam
+- Correos corporativos creados en el dominio subtechsolutions.cl
+- Notificaciones llegando correctamente
+- Responsable de respuesta y tiempo de respuesta definidos",,Presencia digital y marketing,Medium,1,web;administracion
+Story,W10 Caso de estudio descargable de Mina Don Jaime,"Elaborar un caso de estudio en PDF que documente el proyecto completo, para uso comercial y como respaldo en postulaciones a fondos.
+
+Estructura sugerida: contexto del cliente, problema, solucion tecnica implementada, fases del proyecto, resultados medibles, testimonios, proyeccion.
+
+Depende de W6.
+
+Criterios de aceptacion:
+- Documento redactado y disenado
+- Aprobado por La Patagua para divulgacion
+- Publicado como descarga en el sitio
+- Version reutilizable para postulaciones a fondos",,Presencia digital y marketing,Medium,3,web;contenido;comercial
+Task,W11 Perfil corporativo en LinkedIn,"Crear pagina de empresa en LinkedIn y publicar contenido inicial.
+
+Criterios de aceptacion:
+- Pagina creada con identidad visual consistente
+- Los 3 socios vinculados a la empresa en sus perfiles
+- Tres publicaciones iniciales realizadas
+- Calendario editorial basico definido",,Presencia digital y marketing,Low,2,marketing;redes
+Story,S1 Entrevistas a usuarios de licencias vigentes,"Entrevistar a los 12 usuarios de las licencias vendidas a La Patagua para levantar uso real, dolores y funcionalidades faltantes.
+
+Esta tarea alimenta S2, S3, S5 y S6, y ademas sirve para identificar candidatos a testimonio para W5.
+
+Pauta a cubrir:
+- Frecuencia y contexto de uso
+- Funcionalidades mas usadas y nunca usadas
+- Informacion que buscan y no encuentran
+- Reportes que generan manualmente fuera del sistema
+- Decisiones que toman en base al sistema
+
+Criterios de aceptacion:
+- Al menos 8 de los 12 usuarios entrevistados
+- Hallazgos consolidados en informe unico
+- Lista priorizada de mejoras derivada de las entrevistas
+- Candidatos a testimonio identificados",,Producto y software,High,3,producto;investigacion;cliente-patagua
+Story,S2 Definir KPIs y vistas del dashboard principal,"Definir que indicadores debe mostrar la pantalla principal, en base a los hallazgos de S1.
+
+Candidatos a evaluar: personal en interior mina en tiempo real, distribucion por macronivel, tiempo de permanencia, activos en operacion, alertas activas, historico de ingresos y salidas.
+
+Criterios de aceptacion:
+- Set de KPIs definido y priorizado
+- Wireframe del dashboard principal
+- Validacion con al menos 2 usuarios finales
+- Especificacion lista para diseno",,Producto y software,High,2,producto;diseno
+Story,S3 Rediseno de interfaz de usuario,"Rediseno visual de la plataforma para dar mayor dinamismo y consistencia.
+
+Alcance: sistema de diseno, paleta de colores, tipografia, biblioteca de componentes, estados de carga y vacio, comportamiento responsive.
+
+Criterios de aceptacion:
+- Sistema de diseno documentado
+- Pantallas principales redisenadas
+- Componentes implementados y reutilizables
+- Validacion con usuarios finales realizada",,Producto y software,Medium,5,producto;diseno;frontend
+Story,S4 Vista esquematica de mina en tiempo real,"Desarrollar visualizacion esquematica de la mina que muestre estado por macronivel en tiempo real.
+
+Alcance: representacion visual de los 3 macroniveles, conteo de personas y activos por nivel, indicadores de alerta, capacidad de ampliacion a mas niveles al agregar porticos.
+
+Criterios de aceptacion:
+- Vista implementada y desplegada
+- Datos actualizandose en tiempo real
+- Arquitectura permite agregar niveles sin reescritura
+- Validada con jefatura de mina",,Producto y software,Medium,8,producto;desarrollo
+Story,S5 Modulo de reporteria exportable,"Desarrollar generacion de reportes exportables en Excel y PDF.
+
+Reportes prioritarios: asistencia y dotacion por periodo, permanencia por persona, trazabilidad de movimientos, uso de activos, historico de alertas.
+
+Criterios de aceptacion:
+- Reportes prioritarios implementados
+- Exportacion a Excel y PDF funcionando
+- Filtros por fecha, persona, activo y nivel
+- Programacion de envio automatico por correo",,Producto y software,High,5,producto;desarrollo
+Story,S6 Sistema de alertas configurables,"Implementar motor de alertas configurable por el usuario.
+
+Tipos de alerta a considerar: permanencia superior a umbral definido, ingreso a nivel no autorizado, activo fuera de zona asignada, perdida de senal de TAG, aforo excedido por nivel.
+
+Sinergia relevante: esta funcionalidad conecta directamente con el proyecto de sirenas AXIS adjudicado. Vale la pena disenarla considerando integracion futura con ese sistema.
+
+Criterios de aceptacion:
+- Motor de alertas implementado
+- Configuracion de umbrales por usuario
+- Notificacion por correo y en plataforma
+- Registro historico de alertas disponible",,Producto y software,Medium,5,producto;desarrollo
+Story,S7 Arquitectura multi-tenant,"Refactorizar la plataforma para soportar multiples clientes con aislamiento de datos. Es el habilitador tecnico de toda la estrategia de expansion.
+
+Sin multi-tenancy, cada mina nueva implica un despliegue paralelo con mantencion independiente, lo que hace inviable la escalabilidad del modelo de negocio y debilita cualquier postulacion a fondos que argumente escalabilidad.
+
+Alcance: modelo de datos con aislamiento por cliente, autenticacion y autorizacion por organizacion, configuracion parametrizable por cliente, despliegue unico multi-cliente.
+
+Criterios de aceptacion:
+- Modelo de datos multi-tenant implementado
+- Aislamiento de datos verificado con pruebas
+- Cliente La Patagua migrado sin interrupcion de servicio
+- Documentacion de proceso de alta de cliente nuevo",,Producto y software,High,8,producto;arquitectura;escalabilidad
+Task,S8 Documentacion tecnica y manual de usuario,"Elaborar documentacion tecnica de arquitectura y manual de usuario de la plataforma.
+
+Ademas de su valor operativo, es requisito frecuente en postulaciones a fondos concursables y en procesos de due diligence.
+
+Criterios de aceptacion:
+- Documentacion de arquitectura escrita
+- Manual de usuario final elaborado
+- Documentacion de instalacion y configuracion
+- Todo versionado en repositorio",,Producto y software,Low,3,producto;documentacion
+Story,S9 Modelo de licenciamiento y precios,"Definir estructura de precios y licenciamiento para clientes nuevos, tomando como referencia las 12 licencias vendidas a La Patagua.
+
+A definir: unidad de cobro (por licencia, por portico, por usuario, por sitio), esquema de suscripcion, costo de implementacion inicial, mantencion y soporte, escalamiento por volumen.
+
+Criterios de aceptacion:
+- Modelo de precios documentado
+- Al menos 3 escenarios de cliente simulados
+- Margen por escenario calculado
+- Lista de precios lista para uso comercial",,Producto y software,Medium,2,producto;comercial
+Story,O1 Carta Gantt proyecto 8 puntos de red,"Elaborar la planificacion del proyecto de instalacion de 8 puntos de red en accesos a niveles subterraneos.
+
+Debe incluir: hitos y entregables, dependencias entre puntos, ventanas de intervencion coordinadas con operacion de mina, plazos comprometidos contractualmente, responsables por actividad.
+
+Criterios de aceptacion:
+- Carta Gantt elaborada y compartida
+- Hitos y entregables definidos
+- Ventanas de intervencion validadas con La Patagua
+- Plan de contingencia ante retrasos definido",,Ejecucion proyectos La Patagua,Highest,2,operaciones;planificacion;cliente-patagua
+Story,O2 Levantamiento en terreno y topologia de red,"Realizar levantamiento tecnico en terreno y disenar la topologia de la red para los 8 puntos.
+
+Alcance: relevamiento de cada punto de instalacion, distancias y trazado de canalizacion, requerimientos de alimentacion electrica, diseno de topologia, especificacion de equipamiento, direccionamiento IP.
+
+Aprovechar la experiencia acumulada en las conexiones de red realizadas para los porticos TAG.
+
+Criterios de aceptacion:
+- Levantamiento de los 8 puntos completado
+- Diagrama de topologia elaborado
+- Especificacion tecnica de equipamiento definida
+- Plano de canalizacion y trazado
+- Diseno validado con contraparte tecnica del cliente",,Ejecucion proyectos La Patagua,Highest,5,operaciones;ingenieria;cliente-patagua
+Task,O3 Cotizacion y compra de equipamiento de red,"Cotizar y adquirir el equipamiento necesario para los 8 puntos de red.
+
+Considerar: switches industriales, fibra optica y cable estructurado, gabinetes con proteccion adecuada al ambiente de mina, UPS, accesorios de canalizacion y montaje.
+
+Atender condiciones ambientales de interior mina: humedad, polvo, vibracion.
+
+Criterios de aceptacion:
+- Al menos 3 cotizaciones por item critico
+- Proveedores seleccionados con criterio documentado
+- Ordenes de compra emitidas
+- Plazos de entrega confirmados y compatibles con la Gantt",,Ejecucion proyectos La Patagua,High,3,operaciones;compras
+Story,O4 Plan de instalacion por punto,"Elaborar el plan de ejecucion detallado para la instalacion de cada uno de los 8 puntos.
+
+Debe incluir: procedimiento de trabajo por punto, coordinacion de ventanas de intervencion con operacion, requisitos de seguridad y permisos de trabajo, dotacion y herramientas requeridas, protocolo de pruebas y aceptacion.
+
+Criterios de aceptacion:
+- Procedimiento de trabajo documentado
+- Analisis de riesgos por actividad elaborado
+- Permisos de trabajo gestionados con el cliente
+- Protocolo de pruebas definido y aprobado",,Ejecucion proyectos La Patagua,High,3,operaciones;planificacion;seguridad
+Story,O5 Carta Gantt proyecto sirenas AXIS,"Elaborar la planificacion del proyecto de instalacion del sistema de alerta ante incidentes con dispositivos AXIS D4100-VE Mk II en 7 niveles.
+
+Debe incluir: hitos y entregables, secuencia de instalacion por nivel, dependencias con la infraestructura de red existente y en ejecucion, ventanas de intervencion, plazos comprometidos.
+
+Verificar dependencias con O1: ambos proyectos comparten infraestructura de red y ventanas de intervencion. Conviene coordinarlos para no duplicar detenciones.
+
+Criterios de aceptacion:
+- Carta Gantt elaborada y compartida
+- Dependencias con el proyecto de red identificadas
+- Ventanas de intervencion coordinadas y validadas
+- Plan de contingencia definido",,Ejecucion proyectos La Patagua,Highest,2,operaciones;planificacion;cliente-patagua
+Story,O6 Protocolo de evacuacion integrado,"Disenar el protocolo de evacuacion asociado al sistema de alerta, en conjunto con el area de seguridad de La Patagua.
+
+Alcance: definicion de escenarios de emergencia, secuencia de activacion por nivel, integracion con el sistema de ubicacion existente para verificar evacuacion efectiva, procedimiento de prueba periodica, capacitacion al personal.
+
+Oportunidad relevante: el sistema de ubicacion por TAG puede verificar en tiempo real si el personal efectivamente evacuo. Esa integracion es un diferenciador comercial fuerte y vale la pena documentarla como capacidad propia.
+
+Criterios de aceptacion:
+- Protocolo redactado y aprobado por seguridad del cliente
+- Integracion con sistema de ubicacion especificada
+- Plan de pruebas periodicas definido
+- Material de capacitacion elaborado",,Ejecucion proyectos La Patagua,Medium,5,operaciones;seguridad;cliente-patagua
+Task,O7 Documentacion as built de ambos proyectos,"Elaborar la documentacion as built de los proyectos de red y de sirenas una vez ejecutados.
+
+Debe incluir: planos definitivos de lo instalado, inventario de equipamiento con numeros de serie, configuraciones aplicadas, protocolos de prueba firmados, garantias de equipamiento.
+
+Criterios de aceptacion:
+- Documentacion as built completa de ambos proyectos
+- Entregada formalmente al cliente
+- Copia archivada en repositorio interno
+- Reutilizable como respaldo en propuestas futuras",,Ejecucion proyectos La Patagua,Medium,3,operaciones;documentacion
+Story,O8 Plan de mantencion preventiva,"Disenar una oferta de mantencion preventiva para la infraestructura instalada, como linea de ingresos recurrentes.
+
+Alcance: rutinas de mantencion por tipo de equipamiento, frecuencia, niveles de servicio y tiempos de respuesta, modelo de cobro, propuesta comercial formal.
+
+Relevancia estrategica: hoy todos los ingresos son por proyecto, es decir puntuales. Una linea de mantencion genera ingresos recurrentes, mejora la valorizacion de la empresa y fortalece cualquier postulacion a fondos.
+
+Criterios de aceptacion:
+- Rutinas de mantencion definidas por tipo de equipo
+- Niveles de servicio y tiempos de respuesta definidos
+- Modelo de cobro y precio calculado
+- Propuesta comercial presentada a La Patagua",,Ejecucion proyectos La Patagua,Medium,3,operaciones;comercial;ingresos-recurrentes
+Story,F1 Investigacion de fondos concursables,"Investigar los instrumentos de financiamiento publico disponibles y pertinentes al estado actual de la empresa.
+
+Instrumentos a revisar:
+- CORFO Semilla Inicia y Semilla Expande
+- CORFO Crea y Valida
+- CORFO Escalamiento y Consolida
+- ANID en lineas de I+D aplicada
+- Start-Up Chile
+- SERCOTEC Capital Semilla y Crece
+- Programas regionales de la Region de Valparaiso si corresponde por ubicacion de la faena
+
+Consideracion importante: varios instrumentos exigen que la empresa no supere cierta antiguedad o cierto nivel de ventas. Verificar elegibilidad caso a caso dado que la sociedad ya esta constituida y tiene facturacion.
+
+Criterios de aceptacion:
+- Al menos 8 instrumentos revisados
+- Elegibilidad verificada para cada uno
+- Fechas de convocatoria registradas
+- Instrumentos descartados con razon documentada",,Financiamiento y expansion,High,5,financiamiento;investigacion
+Story,F2 Matriz comparativa de fondos,"Consolidar los hallazgos de F1 en una matriz de decision.
+
+Columnas: instrumento, entidad, monto maximo, porcentaje de cofinanciamiento exigido, plazo de ejecucion, requisitos de elegibilidad, fecha de postulacion, esfuerzo estimado de postulacion, ajuste con el proyecto.
+
+Criterios de aceptacion:
+- Matriz completa de todos los instrumentos elegibles
+- Priorizacion de los 3 instrumentos con mejor ajuste
+- Calendario de postulaciones con fechas limite
+- Decision de a cuales se postula tomada por los 3 socios",,Financiamiento y expansion,High,2,financiamiento;analisis
+Task,F3 Definir nivel de madurez tecnologica TRL,"Determinar y documentar el TRL del producto, dado que es requisito habitual en postulaciones a fondos de innovacion.
+
+Antecedente: existe prototipo validado en entorno real, operando dos anos en Mina Don Jaime con clientes pagando licencias. Eso sugiere TRL 8 o 9, no TRL 6 o 7. Es una ventaja competitiva relevante frente a postulantes con prototipos de laboratorio, y conviene argumentarla con evidencia.
+
+Criterios de aceptacion:
+- TRL determinado y justificado con evidencia
+- Evidencia de validacion en entorno operacional documentada
+- Argumento redactado y reutilizable en postulaciones",,Financiamiento y expansion,Medium,1,financiamiento;producto
+Story,F4 Modelo financiero a 3 anos,"Construir modelo financiero proyectado, requisito en practicamente toda postulacion a fondos y base para decisiones de precio y contratacion.
+
+Debe incluir: ingresos historicos por linea, proyeccion por linea de negocio, estructura de costos, punto de equilibrio, flujo de caja proyectado, escenarios conservador, base y optimista.
+
+Criterios de aceptacion:
+- Modelo construido en planilla con supuestos explicitos
+- Tres escenarios modelados
+- Necesidad de capital identificada y cuantificada
+- Revisado con contador",,Financiamiento y expansion,Medium,5,financiamiento;analisis
+Story,F5 Pitch deck comercial,"Elaborar presentacion comercial de 10 a 12 laminas, reutilizable para clientes nuevos y para postulaciones a fondos.
+
+Estructura sugerida: problema del sector, solucion, tecnologia, caso Mina Don Jaime con metricas, lineas de negocio, mercado objetivo, modelo de negocio, equipo, traccion, proyeccion, solicitud concreta.
+
+Incorporar el aprendizaje de la presentacion rechazada: el mensaje debe hablar el lenguaje de la mediana mineria, no el de la gran mineria.
+
+Criterios de aceptacion:
+- Deck de 10 a 12 laminas elaborado
+- Version comercial y version para fondos
+- Metricas de W7 incorporadas
+- Ensayado y cronometrado por los 3 socios",,Financiamiento y expansion,High,5,financiamiento;comercial;marketing
+Story,F6 Mapeo de las otras minas de La Patagua,"Levantar informacion sobre las otras 3 minas de la compania como objetivo de expansion mas accesible.
+
+Por cada faena: ubicacion y caracteristicas operacionales, dotacion aproximada, infraestructura de comunicaciones existente, decisores y contrapartes tecnicas, necesidades detectadas, presupuesto y ciclo de aprobacion.
+
+Ventaja competitiva: ya existe relacion contractual, credibilidad demostrada y contrapartes conocidas dentro del grupo. Es el camino de menor friccion para el segundo cliente.
+
+Criterios de aceptacion:
+- Ficha levantada por cada una de las 3 faenas
+- Decisores identificados por faena
+- Necesidades priorizadas
+- Estrategia de aproximacion definida",,Financiamiento y expansion,High,3,comercial;expansion
+Story,F7 Propuesta formal para segunda mina,"Elaborar propuesta tecnica y economica para la faena priorizada en F6.
+
+Debe incluir: diagnostico de necesidades, solucion propuesta por fases, alcance tecnico, plazos, inversion y modelo de pago, caso de referencia de Mina Don Jaime, garantias y soporte.
+
+Considerar proponer una fase inicial acotada y de bajo riesgo antes de un despliegue completo, aprendiendo del rechazo a la ampliacion de porticos.
+
+Criterios de aceptacion:
+- Propuesta tecnica y economica elaborada
+- Revisada por los 3 socios
+- Presentada formalmente a la contraparte
+- Reunion de presentacion agendada",,Financiamiento y expansion,Medium,5,comercial;expansion
+Task,F8 Base de datos de mineria subterranea mediana en Chile,"Construir base de datos de potenciales clientes en el segmento objetivo.
+
+Por cada empresa: faenas subterraneas, dotacion aproximada, ubicacion, nivel de digitalizacion conocido, contactos identificados, eventos donde participan.
+
+Criterios de aceptacion:
+- Al menos 30 empresas identificadas
+- Segmentadas por prioridad
+- Contactos identificados en al menos 15
+- Base cargada en herramienta de seguimiento comercial",,Financiamiento y expansion,Low,3,comercial;prospeccion
+Task,X1 Analisis post mortem de presentacion rechazada,"Analizar por que la propuesta de ampliacion de porticos fue rechazada, para no repetir el error en las proximas propuestas.
+
+Contexto: la respuesta de los ejecutivos fue que la tecnologia es excesiva para su escala y esta pensada para gran mineria. Sin embargo aprobaron dos proyectos de comunicacion y seguridad en la misma instancia.
+
+Hipotesis a distinguir: si el problema fue el costo, o si fue que el valor no se comunico en el lenguaje del cliente, es decir en terminos de reduccion de tiempos de evacuacion, cumplimiento normativo y respuesta ante emergencias. Si es lo segundo, la misma tecnologia reposicionada puede volver a ser vendible mas adelante.
+
+Criterios de aceptacion:
+- Presentacion original revisada
+- Feedback documentado en detalle
+- Hipotesis evaluadas con evidencia disponible
+- Aprendizajes incorporados a W2 y F5",,Financiamiento y expansion,High,2,estrategia;aprendizaje

@@ -88,6 +88,14 @@ body {
 .delay-500 { animation-delay: 500ms; }
 .delay-600 { animation-delay: 600ms; }
 
+@keyframes dash-move {
+  to { stroke-dashoffset: -18; }
+}
+
+.animate-dash-move {
+  animation: dash-move 1.5s linear infinite;
+}
+
 /* Input focus ring */
 input:focus {
   outline: none;
@@ -96,4 +104,92 @@ input:focus {
 /* Smooth button press */
 .btn-press:active {
   transform: scale(0.97);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Telemetría — superficie oscura tipo sala de control.
+   Es la única sección oscura de la app: replica la maqueta que
+   el cliente imaginó para el dashboard de maquinaria.
+   ══════════════════════════════════════════════════════════════ */
+
+@theme inline {
+  --color-tel-void: #060d16;
+  --color-tel-bg: #0a1420;
+  --color-tel-surface: #0f1d2d;
+  --color-tel-raised: #15273b;
+  --color-tel-line: #1d3752;
+  --color-tel-text: #e8f1f8;
+  --color-tel-muted: #8aa6c0;
+  --color-tel-dim: #5b7a96;
+}
+
+/* Barrido de brillo de las cartas de maquinaria */
+@keyframes card-shine {
+  from { transform: translateX(-120%) skewX(-18deg); }
+  to   { transform: translateX(320%) skewX(-18deg); }
+}
+
+.card-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(182, 226, 255, 0.16),
+    transparent
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.card-shine:hover::after {
+  animation: card-shine 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Latido del punto de estado "reportando" */
+@keyframes status-pulse {
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  70%  { box-shadow: 0 0 0 6px transparent; opacity: 0.85; }
+  100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+}
+
+.animate-status-pulse {
+  animation: status-pulse 2.4s ease-out infinite;
+}
+
+/* Rotación del anillo de carga de los medidores */
+@keyframes gauge-sweep {
+  from { stroke-dashoffset: var(--gauge-empty); }
+  to   { stroke-dashoffset: var(--gauge-offset); }
+}
+
+.gauge-arc {
+  animation: gauge-sweep 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* uPlot sobre fondo oscuro: el CSS que trae la librería asume claro */
+.tel-chart .u-over,
+.tel-chart .u-under {
+  border-color: transparent;
+}
+
+.tel-chart .u-cursor-x,
+.tel-chart .u-cursor-y {
+  border-color: rgba(182, 226, 255, 0.35);
+}
+
+.tel-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.tel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(111, 176, 226, 0.22);
+  border-radius: 999px;
 }

@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/scroll-reveal";
 import Navbar from "@/components/navbar";
+import DemoInteractiva from "@/components/demo-interactiva";
+import ValorOperacional from "@/components/valor-operacional";
 
 const painPoints = [
   {
@@ -187,6 +189,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <DemoInteractiva />
+
       <section id="tecnologia" className="border-y border-subtech-blue/10 bg-[#07101f]/80 px-4 py-24 md:px-10 lg:py-32">
         <div className="mx-auto max-w-[1180px]">
           <SectionTitle
@@ -308,6 +312,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ValorOperacional />
 
       <section className="mx-auto max-w-[1180px] px-4 py-24 md:px-10 lg:py-32">
         <SectionTitle eyebrow="Validacion de mercado" title="Lo dice quien opera la mina" />

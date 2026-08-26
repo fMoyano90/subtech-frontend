@@ -19,9 +19,11 @@ export default function Navbar() {
           <Image src="/logo.svg" alt="Subtech Solutions" width={168} height={44} priority className="h-8 w-auto" />
         </Link>
 
-        <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/65 p-1 backdrop-blur-xl">
+          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/65 p-1 backdrop-blur-xl">
           <Link href="/#problema" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Qué resolvemos</Link>
+          <Link href="/#demo" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Demo interactiva</Link>
           <Link href="/#tecnologia" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Tecnología</Link>
+          <Link href="/#valor" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Valor operacional</Link>
           <Link href="/#red" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Red interior mina</Link>
           <Link href="/#plataforma" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Plataforma web</Link>
           <Link href="/nosotros" className="rounded-full px-4 py-2 text-sm text-white/60 transition hover:text-white">Nosotros</Link>
@@ -61,7 +63,9 @@ export default function Navbar() {
 
           <div className="flex flex-col gap-2">
             <Link href="/#problema" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">qué resolvemos</Link>
+            <Link href="/#demo" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">demo interactiva</Link>
             <Link href="/#tecnologia" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">tecnología</Link>
+            <Link href="/#valor" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">valor operacional</Link>
             <Link href="/#red" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">red interior mina</Link>
             <Link href="/#plataforma" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">plataforma web</Link>
             <Link href="/nosotros" onClick={() => setIsOpen(false)} className="rounded-xl px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white">nosotros</Link>

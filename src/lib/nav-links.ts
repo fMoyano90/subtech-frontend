@@ -7,6 +7,7 @@ const BASE_LINKS: NavLink[] = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/plano", label: "Plano" },
   { href: "/porticos", label: "Pórticos" },
+  { href: "/telemetria", label: "Telemetría" },
 ];
 
 const ADMIN_LINKS: NavLink[] = [
