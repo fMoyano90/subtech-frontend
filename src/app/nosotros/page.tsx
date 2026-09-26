@@ -3,7 +3,15 @@ import Link from "next/link";
 import ScrollReveal from "@/components/scroll-reveal";
 import Navbar from "@/components/navbar";
 
-const team = [
+type TeamMember = {
+  initials: string;
+  name: string;
+  role: string;
+  bio: string;
+  hidden?: boolean;
+};
+
+const team: TeamMember[] = [
   {
     initials: "CS",
     name: "Christian Solar Arenas",
@@ -15,6 +23,7 @@ const team = [
     name: "Felipe Moyano",
     role: "CTO & Socio",
     bio: "Responsable de la arquitectura tecnologica, desarrollo de plataforma y escalabilidad del producto para nuevas faenas.",
+    hidden: true,
   },
   {
     initials: "AR",
@@ -180,7 +189,7 @@ export default function NosotrosPage() {
             lead="Un equipo fundado desde la ingenieria, con experiencia directa en faena y foco en digitalizacion minera."
           />
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {team.map((member) => (
+            {team.filter((member) => !member.hidden).map((member) => (
               <article key={member.name} data-reveal className="rounded-2xl border border-subtech-blue/15 bg-[#08101f] p-8">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-subtech-dark-blue to-subtech-blue text-xl font-bold text-white">
                   {member.initials}
